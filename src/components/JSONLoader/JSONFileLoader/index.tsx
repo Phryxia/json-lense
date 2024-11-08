@@ -3,7 +3,7 @@ import styles from './JSONFileLoader.module.css'
 import { type DragEvent, useRef, useState } from 'react'
 import type { LoaderProps } from '../types'
 import { Alert } from '../../Alert'
-import { JSONSyntaxError } from './JSONSyntaxError'
+import { JSONSyntaxError } from '../JSONSyntaxError'
 
 const cx = cns.bind(styles)
 
