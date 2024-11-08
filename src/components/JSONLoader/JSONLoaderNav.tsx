@@ -17,6 +17,12 @@ export function LoaderNav({ loaderType: selectedLoaderType, onChange }: Props) {
               className={cn({
                 secondary: loaderType !== selectedLoaderType,
               })}
+              data-tooltip={
+                loaderType === LoaderType.FromClipboard
+                  ? 'Recommend for huge JSON!'
+                  : undefined
+              }
+              data-placement="bottom"
             >
               {loaderType}
             </button>
