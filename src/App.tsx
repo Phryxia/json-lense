@@ -1,9 +1,9 @@
-import { JSONFileLoader } from './components/Loader/JSONFileLoader/JSONFileLoader'
+import { JSONLoader } from './components/JSONLoader'
 
 function App() {
   return (
     <main className="container">
-      <JSONFileLoader onLoad={(json) => console.log(json)} />
+      <JSONLoader />
     </main>
   )
 }
