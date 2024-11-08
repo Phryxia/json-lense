@@ -1,0 +1,26 @@
+.empty-state {
+  text-align: center;
+  color: #666;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+
+  &.dragging {
+    border-color: #1095c1;
+    background-color: rgba(16, 149, 193, 0.1);
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.syntax-error {
+  background-color: #333;
+  font-family: monospace;
+
+  code {
+    color: #eee;
+  }
+}
