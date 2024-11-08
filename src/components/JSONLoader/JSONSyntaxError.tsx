@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import cns from 'classnames/bind'
-import styles from './JSONFileLoader/JSONFileLoader.module.css'
+import styles from './JSONFileLoader.module.css'
 import { useMemo } from 'react'
 
 const cx = cns.bind(styles)

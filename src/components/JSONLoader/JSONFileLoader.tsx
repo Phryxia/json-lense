@@ -1,9 +1,8 @@
 import cns from 'classnames/bind'
 import styles from './JSONFileLoader.module.css'
 import { type DragEvent, useRef, useState } from 'react'
-import type { LoaderProps } from '../types'
-import { Alert } from '../../Alert'
-import { JSONSyntaxError } from '../JSONSyntaxError'
+import type { LoaderProps } from './types'
+import { JSONSyntaxError } from './JSONSyntaxError'
 
 const cx = cns.bind(styles)
 
@@ -54,18 +53,6 @@ export function JSONFileLoader({ onLoad }: LoaderProps) {
     handleFileLoad?.(droppedFiles[0])
   }
 
-  function handleAlertClose() {
-    setFile(undefined)
-    setError(undefined)
-    setSource('')
-
-    // flush input's inner state
-    if (inputRef.current) {
-      inputRef.current.files = null
-      inputRef.current.value = ''
-    }
-  }
-
   return (
     <article
       onDragOver={handleDragOver}
@@ -93,12 +80,10 @@ export function JSONFileLoader({ onLoad }: LoaderProps) {
         />
       </label>
       {error && (
-        <Alert
-          isOpen
-          onClose={handleAlertClose}
-          title={error.name}
-          content={<JSONSyntaxError source={source} error={error} />}
-        />
+        <section>
+          <hr />
+          <JSONSyntaxError source={source} error={error} />
+        </section>
       )}
     </article>
   )
