@@ -3,11 +3,12 @@ import type { LoaderProps } from './types'
 import { LoaderType } from './consts'
 import { LoaderNav } from './JSONLoaderNav'
 import { JSONTextLoader } from './JSONTextLoader'
+import { JSONClipboardLoader } from './JSONClipboardLoader'
 import { JSONFileLoader } from './JSONFileLoader'
 
 const Loaders: Record<LoaderType, (props: LoaderProps) => ReactElement> = {
   [LoaderType.FromText]: JSONTextLoader,
-  [LoaderType.FromClipboard]: JSONFileLoader,
+  [LoaderType.FromClipboard]: JSONClipboardLoader,
   [LoaderType.FromFile]: JSONFileLoader,
 }
 
