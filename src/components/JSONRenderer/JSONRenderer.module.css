@@ -1,0 +1,35 @@
+.root {
+  font-family: monospace;
+  font-size: 1rem;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  width: 100%;
+  padding: var(--pico-form-element-spacing-vertical)
+    var(--pico-form-element-spacing-horizontal);
+
+  .dummy {
+    box-sizing: border-box;
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    line-height: inherit;
+  }
+
+  .inner-container {
+    width: calc(100% + 1px);
+  }
+
+  .boolean {
+  }
+
+  .number {
+  }
+
+  .string {
+  }
+
+  .delimiter {
+    padding-right: 0.25rem;
+  }
+}
