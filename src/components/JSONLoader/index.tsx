@@ -12,15 +12,17 @@ const Loaders: Record<LoaderType, (props: LoaderProps) => ReactElement> = {
   [LoaderType.FromFile]: JSONFileLoader,
 }
 
-export function JSONLoader() {
+type Props = {
+  onLoad(json: any): void
+}
+
+export function JSONLoader({ onLoad }: Props) {
   const [loaderType, setLoaderType] = useState(LoaderType.FromText)
 
   return (
     <section>
       <LoaderNav loaderType={loaderType} onChange={setLoaderType} />
-      {createElement(Loaders[loaderType], {
-        onLoad() {},
-      })}
+      {createElement(Loaders[loaderType], { onLoad })}
     </section>
   )
 }
