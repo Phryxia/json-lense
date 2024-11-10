@@ -86,55 +86,65 @@ function* renderJSONAsToken(
 }
 
 function* renderJSONUndefinedAsToken({
+  tabs,
   idCounter,
 }: RenderJSONAsTokenParams): IterableIterator<JSONToken> {
   yield {
     type: JSONTokenType.Null,
     content: 'undefined',
     id: idCounter.next(),
+    tabs,
   }
 }
 
 function* renderJSONNullAsToken({
+  tabs,
   idCounter,
 }: RenderJSONAsTokenParams): IterableIterator<JSONToken> {
   yield {
     type: JSONTokenType.Null,
     content: 'null',
     id: idCounter.next(),
+    tabs,
   }
 }
 
 function* renderJSONBooleanAsToken({
   value,
+  tabs,
   idCounter,
 }: RenderJSONAsTokenParams): IterableIterator<JSONToken> {
   yield {
     type: JSONTokenType.Boolaen,
     content: value.toString(),
     id: idCounter.next(),
+    tabs,
   }
 }
 
 function* renderJSONNumberAsToken({
   value,
+  tabs,
   idCounter,
 }: RenderJSONAsTokenParams): IterableIterator<JSONToken> {
   yield {
     type: JSONTokenType.Number,
     content: value.toString(),
     id: idCounter.next(),
+    tabs,
   }
 }
 
 function* renderJSONStringAsToken({
   value,
+  tabs,
   idCounter,
 }: RenderJSONAsTokenParams): IterableIterator<JSONToken> {
   yield {
     type: JSONTokenType.String,
     content: `"${sanitizeString(value)}"`,
     id: idCounter.next(),
+    tabs,
   }
 }
 
@@ -148,6 +158,7 @@ function* renderJSONArrayAsToken({
     type: JSONTokenType.Parenthesis,
     content: '[',
     id: idCounter.next(),
+    tabs,
   }
   yield { type: JSONTokenType.LineBreak }
 
@@ -156,6 +167,7 @@ function* renderJSONArrayAsToken({
       type: JSONTokenType.Whitespace,
       content: tabChar.repeat(tabs + 1),
       id: idCounter.next(),
+      tabs,
     }
     yield* renderJSONAsToken({
       value: child,
@@ -167,6 +179,7 @@ function* renderJSONArrayAsToken({
       type: JSONTokenType.Delimiter,
       content: ',',
       id: idCounter.next(),
+      tabs,
     }
     yield { type: JSONTokenType.LineBreak }
   }
@@ -175,11 +188,13 @@ function* renderJSONArrayAsToken({
     type: JSONTokenType.Whitespace,
     content: tabChar.repeat(tabs),
     id: idCounter.next(),
+    tabs,
   }
   yield {
     type: JSONTokenType.Parenthesis,
     content: ']',
     id: idCounter.next(),
+    tabs,
   }
 }
 
@@ -189,7 +204,12 @@ function* renderJSONObjectAsToken({
   tabs,
   idCounter,
 }: RenderJSONAsTokenParams): IterableIterator<JSONToken> {
-  yield { type: JSONTokenType.Parenthesis, content: '{', id: idCounter.next() }
+  yield {
+    type: JSONTokenType.Parenthesis,
+    content: '{',
+    id: idCounter.next(),
+    tabs,
+  }
   yield { type: JSONTokenType.LineBreak }
 
   for (const [key, child] of Object.entries(value)) {
@@ -197,16 +217,27 @@ function* renderJSONObjectAsToken({
       type: JSONTokenType.Whitespace,
       content: tabChar.repeat(tabs + 1),
       id: idCounter.next(),
+      tabs,
     }
-    yield { type: JSONTokenType.Key, content: key, id: idCounter.next() }
-    yield { type: JSONTokenType.Delimiter, content: ':', id: idCounter.next() }
+    yield { type: JSONTokenType.Key, content: key, id: idCounter.next(), tabs }
+    yield {
+      type: JSONTokenType.Delimiter,
+      content: ':',
+      id: idCounter.next(),
+      tabs,
+    }
     yield* renderJSONAsToken({
       value: child,
       tabChar,
       tabs: tabs + 1,
       idCounter,
     })
-    yield { type: JSONTokenType.Delimiter, content: ',', id: idCounter.next() }
+    yield {
+      type: JSONTokenType.Delimiter,
+      content: ',',
+      id: idCounter.next(),
+      tabs,
+    }
     yield { type: JSONTokenType.LineBreak }
   }
 
@@ -214,8 +245,14 @@ function* renderJSONObjectAsToken({
     type: JSONTokenType.Whitespace,
     content: tabChar.repeat(tabs),
     id: idCounter.next(),
+    tabs,
   }
-  yield { type: JSONTokenType.Parenthesis, content: '}', id: idCounter.next() }
+  yield {
+    type: JSONTokenType.Parenthesis,
+    content: '}',
+    id: idCounter.next(),
+    tabs,
+  }
 }
 
 const SpecialEscape: Record<string, string> = {

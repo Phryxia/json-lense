@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import { IndexedJSONLine } from '../types'
+import { IndexedJSONLine, JSONDefinedToken } from '../types'
 import { fx } from '@fxts/core'
 import { OpenState } from './consts'
 
@@ -38,7 +38,8 @@ export function computeScopes(lines: IndexedJSONLine[]) {
     .map((line) => ({
       begin: line.index,
       end: line.scopeEndIndex!,
-      isOpen: line.index === 0,
+      // Define default opening
+      isOpen: line.index === 0 || (line.tokens[0] as JSONDefinedToken).tabs < 2,
     }))
     .toArray()
 }

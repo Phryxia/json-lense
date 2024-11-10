@@ -54,7 +54,12 @@ export function JSONRenderer({ json, height }: Props) {
       {/* To measure line height without hardcoding */}
       <code className={cx('dummy')} ref={measureRef} aria-hidden>
         <RenderedToken
-          token={{ type: JSONTokenType.String, content: 'json!', id: -1 }}
+          token={{
+            type: JSONTokenType.String,
+            content: 'json!',
+            id: -1,
+            tabs: 0,
+          }}
         />
       </code>
 
@@ -139,6 +144,7 @@ function renderEaryCloseParenthesis(lastTokenInLine: JSONToken) {
           type: JSONTokenType.Parenthesis,
           content: lastTokenInLine.content === '{' ? '}' : ']',
           id: -1,
+          tabs: 0,
         }}
       />
       <RenderedToken
@@ -146,6 +152,7 @@ function renderEaryCloseParenthesis(lastTokenInLine: JSONToken) {
           type: JSONTokenType.Delimiter,
           content: ',',
           id: -1,
+          tabs: 0,
         }}
       />
     </>
