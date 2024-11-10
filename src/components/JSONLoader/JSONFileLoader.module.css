@@ -6,6 +6,10 @@
   padding: 1rem;
   transition: all 0.2s ease;
 
+  &:not(:last-child) {
+    margin-bottom: var(--pico-block-spacing-vertical);
+  }
+
   &.dragging {
     border-color: #1095c1;
     background-color: rgba(16, 149, 193, 0.1);

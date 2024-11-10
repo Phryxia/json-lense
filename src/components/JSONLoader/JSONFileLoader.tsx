@@ -1,12 +1,14 @@
 import cns from 'classnames/bind'
 import styles from './JSONFileLoader.module.css'
 import { type DragEvent, useRef, useState } from 'react'
+import { JSONInspector } from '../JSONInspector'
 import type { LoaderProps } from './types'
 import { JSONSyntaxError } from './JSONSyntaxError'
 
 const cx = cns.bind(styles)
 
 export function JSONFileLoader({ onLoad }: LoaderProps) {
+  const [json, setJson] = useState<any>()
   const [file, setFile] = useState<File>()
   const [source, setSource] = useState('')
   const [isDragging, setIsDragging] = useState(false)
@@ -26,11 +28,15 @@ export function JSONFileLoader({ onLoad }: LoaderProps) {
       }
 
       setSource(text)
-      onLoad(JSON.parse(text))
+
+      const parsedJson = JSON.parse(text)
+      onLoad(parsedJson)
+      setJson(parsedJson)
       setError(undefined)
     } catch (e) {
       if (e instanceof Error) {
         setError(e)
+        setJson(undefined)
       }
     }
   }
@@ -83,6 +89,11 @@ export function JSONFileLoader({ onLoad }: LoaderProps) {
         <section>
           <hr />
           <JSONSyntaxError source={source} error={error} />
+        </section>
+      )}
+      {json !== undefined && (
+        <section>
+          <JSONInspector json={json} height={200} />
         </section>
       )}
     </article>
