@@ -1,6 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './JSONInspector.module.css'
-import { ChangeEvent, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useJSONInspector } from './JSONInspectorContext'
 import { JSONSearchResult } from './types'
 
@@ -11,13 +11,12 @@ type Props = {}
 export function JSONSearch({}: Props) {
   const { lines, setMatches } = useJSONInspector()
 
+  const [keyword, setKeyword] = useState('')
   const [isMatchCase, setIsMatchCase] = useState(false)
   const [isMatchWord, setIsMatchWord] = useState(false)
   const [isRegexUsed, setIsRegexUsed] = useState(false)
 
-  function handleKeywordChange(e: ChangeEvent<HTMLInputElement>) {
-    const keyword = isMatchCase ? e.target.value : e.target.value.toLowerCase()
-
+  function handleSearchOptionChange() {
     if (!keyword) {
       setMatches([])
       return
@@ -27,13 +26,12 @@ export function JSONSearch({}: Props) {
       .flatMap((line) => {
         const matchResults = line.tokens
           .map((token) => {
-            const target = isMatchCase
-              ? token.content
-              : token.content.toLowerCase()
+            const target = token.content
 
             if (isRegexUsed) {
               const regexp = new RegExp(
-                keyword + (isMatchWord ? '(?!\\w)' : ''),
+                isMatchWord ? `(?<!\\w)${keyword}(?!\\w)` : keyword,
+                !isMatchCase ? 'i' : undefined,
               )
               return {
                 token,
@@ -43,7 +41,8 @@ export function JSONSearch({}: Props) {
 
             const escapedKeyword = keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
             const regexp = new RegExp(
-              escapedKeyword + (isMatchWord ? '(?!\\w)' : ''),
+              isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
+              !isMatchCase ? 'i' : undefined,
             )
             return {
               token,
@@ -71,12 +70,19 @@ export function JSONSearch({}: Props) {
     setMatches(matchedLines)
   }
 
+  useLayoutEffect(handleSearchOptionChange, [
+    keyword,
+    isMatchCase,
+    isMatchWord,
+    isRegexUsed,
+  ])
+
   return (
     <fieldset role="group" className={cx('search-bar')}>
       <input
         type="text"
         placeholder="Enter keyword here"
-        onChange={handleKeywordChange}
+        onChange={(e) => setKeyword(e.target.value)}
       />
       <button
         role="checkbox"
