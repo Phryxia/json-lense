@@ -14,4 +14,5 @@ export type JSONToken =
 export type IndexedJSONLine = {
   tokens: JSONToken[]
   index: number
+  scopeEndIndex?: number
 }

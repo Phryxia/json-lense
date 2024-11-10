@@ -8,7 +8,10 @@ export function* renderJSONAsLines(
   tabChar = '  ',
 ): IterableIterator<IndexedJSONLine> {
   const idCounter = new Counter()
-  let index = 0
+  const lines: IndexedJSONLine[] = []
+  const scopeStack: number[] = []
+
+  let currentIndex = 0
   let line: JSONToken[] = []
   for (const token of renderJSONAsToken({
     value,
@@ -17,19 +20,31 @@ export function* renderJSONAsLines(
     idCounter,
   })) {
     if (token.type === JSONTokenType.LineBreak) {
-      yield {
+      const newLine = {
         tokens: line,
-        index: index++,
+        index: currentIndex++,
       }
+      lines.push(newLine)
+      yield newLine
       line = []
     } else {
+      // to track open & close lines
+      if (token.content === '{' || token.content === '[') {
+        scopeStack.push(currentIndex)
+      } else if (token.content === '}' || token.content === ']') {
+        const scopeStartIndex = scopeStack.pop()!
+        lines[scopeStartIndex].scopeEndIndex = currentIndex
+      }
       line.push(token)
     }
   }
-  yield {
+
+  const newLine = {
     tokens: line,
-    index: index++,
+    index: currentIndex++,
   }
+  lines.push(newLine)
+  yield newLine
 }
 
 type RenderJSONAsTokenParams = {
