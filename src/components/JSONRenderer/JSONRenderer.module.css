@@ -16,8 +16,43 @@
     line-height: inherit;
   }
 
+  /*
+    Color Scheme
+    Ligthmode: from Night Owl Lightmode 
+    Darkmode: from VSCode default
+  */
+  background-color: light-dark(#fbfbfb, #1e1e1e);
+  color: light-dark(#403f53, #d4d4d4);
+
+  .key {
+    color: light-dark(#994cc3, #9cdcfe);
+  }
+
+  .boolean,
+  .null {
+    color: light-dark(#994cc3, #569cd6);
+  }
+
+  .number {
+    color: light-dark(#aa0982, #b5cea8);
+  }
+
+  .string {
+    color: light-dark(#c96765, #ce9178);
+  }
+
+  .parenthesis {
+    color: light-dark(#0c969b, #569cd6);
+  }
+
+  .delimiter {
+    color: light-dark(#403f53, #d4d4d4);
+    padding-right: 0.25rem;
+  }
+
   .inner-container {
     width: calc(100% + 1px);
+    background: inherit;
 
     .more {
       margin: 0 0.25rem;
@@ -32,18 +67,9 @@
         background-color: var(--pico-primary-border);
       }
     }
-  }
 
-  .boolean {
-  }
-
-  .number {
-  }
-
-  .string {
-  }
-
-  .delimiter {
-    padding-right: 0.25rem;
+    code {
+      background: inherit;
+    }
   }
 }
