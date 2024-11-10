@@ -132,13 +132,22 @@ function JSONRendererContent({
 function renderEaryCloseParenthesis(lastTokenInLine: JSONToken) {
   if (getIsParenthesis(lastTokenInLine)) {
     return (
-      <RenderedToken
-        token={{
-          type: JSONTokenType.Parenthesis,
-          content: lastTokenInLine.content === '{' ? '}' : ']',
-          id: -lastTokenInLine.id - 2, // -1 is reserved for measurment
-        }}
-      />
+      <>
+        <RenderedToken
+          token={{
+            type: JSONTokenType.Parenthesis,
+            content: lastTokenInLine.content === '{' ? '}' : ']',
+            id: -1,
+          }}
+        />
+        <RenderedToken
+          token={{
+            type: JSONTokenType.Delimiter,
+            content: ',',
+            id: -1,
+          }}
+        />
+      </>
     )
   }
   return null
