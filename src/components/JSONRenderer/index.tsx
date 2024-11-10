@@ -45,7 +45,7 @@ export function JSONRenderer({ json, height }: Props) {
       {/* To measure line height without hardcoding */}
       <code className={cx('dummy')} ref={measureRef} aria-hidden>
         <RenderedToken
-          token={{ type: JSONTokenType.String, content: 'json!' }}
+          token={{ type: JSONTokenType.String, content: 'json!', id: -1 }}
         />
       </code>
 

@@ -4,6 +4,7 @@ export type JSONToken =
   | {
       type: Exclude<JSONTokenType, JSONTokenType.LineBreak>
       content: string
+      id: number
     }
   | {
       type: JSONTokenType.LineBreak
