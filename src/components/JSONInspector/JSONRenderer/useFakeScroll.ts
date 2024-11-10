@@ -9,7 +9,7 @@ import {
 export function useFakeScroll<M extends HTMLElement, S extends HTMLElement>() {
   const [cursor, setCursor] = useState(0)
   const { lineHeight, measureRef } = useLineHeightMeasure<M>()
-  const scrollRef = useFakeScrollPosition<S>(lineHeight, setCursor)
+  const scrollRef = useFakeScrollPosition<S>(lineHeight, cursor, setCursor)
 
   return {
     cursor,
@@ -46,6 +46,7 @@ function useLineHeightMeasure<E extends HTMLElement>() {
 
 function useFakeScrollPosition<E extends HTMLElement>(
   lineHeight: number | undefined,
+  cursor: number,
   setCursor: Dispatch<SetStateAction<number>>,
 ) {
   const scrollRef = useRef<E>(null)
@@ -62,6 +63,18 @@ function useFakeScrollPosition<E extends HTMLElement>(
     scrollRef.current.addEventListener('scroll', handleScroll)
     return () => scrollRef.current?.removeEventListener('scroll', handleScroll)
   }, [lineHeight])
+
+  useLayoutEffect(() => {
+    if (!scrollRef.current || !lineHeight) return
+
+    // Don't react to small changes
+    const currentCursor = Math.floor(scrollRef.current.scrollTop / lineHeight)
+    if (currentCursor === cursor) return
+
+    scrollRef.current.scrollTo({
+      top: cursor * lineHeight,
+    })
+  }, [cursor])
 
   return scrollRef
 }
