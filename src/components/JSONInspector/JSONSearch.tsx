@@ -2,7 +2,8 @@ import cnx from 'classnames/bind'
 import styles from './JSONInspector.module.css'
 import { useLayoutEffect, useState } from 'react'
 import { useJSONInspector } from './JSONInspectorContext'
-import { JSONSearchResult } from './types'
+import type { IndexedJSONLine } from './JSONRenderer/types'
+import type { JSONSearchResult } from './types'
 
 const cx = cnx.bind(styles)
 
@@ -24,32 +25,13 @@ export function JSONSearch({}: Props) {
 
     const matchedLines = lines
       .flatMap((line) => {
-        const matchResults = line.tokens
-          .map((token) => {
-            const target = token.content
-
-            if (isRegexUsed) {
-              const regexp = new RegExp(
-                isMatchWord ? `(?<!\\w)${keyword}(?!\\w)` : keyword,
-                !isMatchCase ? 'i' : undefined,
-              )
-              return {
-                token,
-                match: regexp.exec(target)!,
-              }
-            }
-
-            const escapedKeyword = keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
-            const regexp = new RegExp(
-              isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
-              !isMatchCase ? 'i' : undefined,
-            )
-            return {
-              token,
-              match: regexp.exec(target)!,
-            }
-          })
-          .filter(({ match }) => match)
+        const matchResults = searchFromLine({
+          line,
+          keyword,
+          isMatchCase,
+          isMatchWord,
+          isRegexUsed,
+        })
 
         if (!matchResults.length) return []
 
@@ -113,6 +95,40 @@ export function JSONSearch({}: Props) {
       </button>
     </fieldset>
   )
+}
+
+type SearchFromLineParams = {
+  line: IndexedJSONLine
+  keyword: string
+  isMatchCase: boolean
+  isMatchWord: boolean
+  isRegexUsed: boolean
+}
+
+function searchFromLine({
+  line,
+  keyword,
+  isMatchCase,
+  isMatchWord,
+  isRegexUsed,
+}: SearchFromLineParams) {
+  return line.tokens
+    .map((token) => {
+      const target = token.content
+      const escapedKeyword = isRegexUsed
+        ? keyword
+        : keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
+
+      const regexp = new RegExp(
+        isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
+        !isMatchCase ? 'i' : undefined,
+      )
+      return {
+        token,
+        match: regexp.exec(target)!,
+      }
+    })
+    .filter(({ match }) => match)
 }
 
 function extractResult(match: RegExpExecArray) {
