@@ -1,11 +1,13 @@
 import cnx from 'classnames/bind'
 import styles from './JSONRenderer.module.css'
 import { Fragment, useLayoutEffect, useMemo } from 'react'
-import type { IndexedJSONLine } from './types'
+import type { IndexedJSONLine, JSONToken } from './types'
 import { JSONTokenType } from './consts'
 import { renderJSONAsLines } from './logic/renderJSONAsLines'
 import { RenderedToken } from './RenderedToken'
 import { useFakeScroll } from './useFakeScroll'
+import { useScopeFolding } from './logic/useScopeFolding'
+import { OpenState } from './logic/consts'
 
 const cx = cnx.bind(styles)
 
@@ -25,15 +27,22 @@ export function JSONRenderer({ json, height }: Props) {
   }, [json])
 
   const lines = useMemo(() => [...renderJSONAsLines(json)], [json])
+  const { openStates, toggleScope } = useScopeFolding(lines)
+  const openLines = useMemo(
+    () => lines.filter(({ index }) => openStates[index] !== OpenState.Closed),
+    [lines, openStates],
+  )
+
   const showingLineCount = height / (lineHeight || 1)
   const startLineIndex = Math.max(0, Math.floor(cursor) - BUFFER_PADDING)
   const endLineIndex = Math.min(
     Math.ceil(cursor) + showingLineCount + BUFFER_PADDING,
-    lines.length,
+    openLines.length,
   )
+
   const exposedLines = useMemo(
-    () => lines.slice(startLineIndex, endLineIndex),
-    [lines, startLineIndex, endLineIndex],
+    () => openLines.slice(startLineIndex, endLineIndex),
+    [openLines, startLineIndex, endLineIndex, openStates],
   )
 
   return (
@@ -54,7 +63,9 @@ export function JSONRenderer({ json, height }: Props) {
           lineHeight={lineHeight}
           lines={exposedLines}
           startLineIndex={startLineIndex}
-          totalLineCount={lines.length}
+          totalLineCount={openLines.length}
+          openStates={openStates}
+          onToggle={toggleScope}
         />
       ) : (
         <div aria-busy="true" />
@@ -68,6 +79,8 @@ type JSONRendereContentProps = {
   lines: IndexedJSONLine[]
   startLineIndex: number
   totalLineCount: number
+  openStates: OpenState[]
+  onToggle(begin: number, end: number): void
 }
 
 function JSONRendererContent({
@@ -75,6 +88,8 @@ function JSONRendererContent({
   lines,
   startLineIndex,
   totalLineCount,
+  openStates,
+  onToggle,
 }: JSONRendereContentProps) {
   return (
     <div
@@ -94,10 +109,43 @@ function JSONRendererContent({
                 key={`${line.index},${tokenIndex}`}
               />
             ))}
+            {line.scopeEndIndex != null && (
+              <>
+                <button
+                  className={cx('more')}
+                  onClick={() => onToggle(line.index, line.scopeEndIndex!)}
+                >
+                  ...
+                </button>
+                {openStates[line.index] === OpenState.BeginClosed &&
+                  renderEaryCloseParenthesis(line.tokens.at(-1)!)}
+              </>
+            )}
             <br />
           </Fragment>
         ))}
       </code>
     </div>
   )
+}
+
+function renderEaryCloseParenthesis(lastTokenInLine: JSONToken) {
+  if (getIsParenthesis(lastTokenInLine)) {
+    return (
+      <RenderedToken
+        token={{
+          type: JSONTokenType.Parenthesis,
+          content: lastTokenInLine.content === '{' ? '}' : ']',
+          id: -lastTokenInLine.id - 2, // -1 is reserved for measurment
+        }}
+      />
+    )
+  }
+  return null
+}
+
+function getIsParenthesis(
+  token: JSONToken,
+): token is JSONToken & { type: JSONTokenType.Parenthesis } {
+  return token.type === JSONTokenType.Parenthesis
 }

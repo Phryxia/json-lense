@@ -18,6 +18,20 @@
 
   .inner-container {
     width: calc(100% + 1px);
+
+    .more {
+      margin: 0 0.25rem;
+      padding: 2px 4px;
+      background: #edd;
+      border: none;
+      color: #888;
+      font-size: 0.6rem;
+      vertical-align: bottom;
+
+      &:hover {
+        background-color: var(--pico-primary-border);
+      }
+    }
   }
 
   .boolean {
