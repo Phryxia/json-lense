@@ -3,30 +3,29 @@ import styles from './JSONRenderer.module.css'
 import { Fragment, useLayoutEffect, useMemo } from 'react'
 import type { IndexedJSONLine, JSONToken } from './types'
 import { JSONTokenType } from './consts'
-import { renderJSONAsLines } from './logic/renderJSONAsLines'
 import { RenderedToken } from './RenderedToken'
 import { useFakeScroll } from './useFakeScroll'
 import { useScopeFolding } from './logic/useScopeFolding'
 import { OpenState } from './logic/consts'
+import { useJSONInspector } from '../JSONInspectorContext'
 
 const cx = cnx.bind(styles)
 
 interface Props {
-  json: any
   height: number
 }
 
 const BUFFER_PADDING = 5
 
-export function JSONRenderer({ json, height }: Props) {
+export function JSONRenderer({ height }: Props) {
+  const { lines } = useJSONInspector()
   const { lineHeight, measureRef, scrollRef, cursor, setCursor } =
     useFakeScroll<HTMLElement, HTMLPreElement>()
 
   useLayoutEffect(() => {
     setCursor(0)
-  }, [json])
+  }, [lines])
 
-  const lines = useMemo(() => [...renderJSONAsLines(json)], [json])
   const { openStates, toggleScope } = useScopeFolding(lines)
   const openLines = useMemo(
     () => lines.filter(({ index }) => openStates[index] !== OpenState.Closed),

@@ -15,7 +15,7 @@ export type JSONLineBreak = {
 }
 
 export type IndexedJSONLine = {
-  tokens: JSONToken[]
+  tokens: JSONDefinedToken[]
   index: number
   scopeEndIndex?: number
 }

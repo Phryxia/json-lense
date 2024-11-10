@@ -50,6 +50,12 @@
     padding-right: 0.25rem;
   }
 
+  em {
+    font-style: normal;
+    background-color: light-dark(#994cc3, #aaa);
+    color: light-dark(#dff, #838);
+  }
+
   .inner-container {
     width: calc(100% + 1px);
     background: inherit;

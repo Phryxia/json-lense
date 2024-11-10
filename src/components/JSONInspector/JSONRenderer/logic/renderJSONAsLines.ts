@@ -1,6 +1,6 @@
 import { fx } from '@fxts/core'
 import { Counter } from '@src/logic/shared/counter'
-import type { IndexedJSONLine, JSONToken } from '../types'
+import type { IndexedJSONLine, JSONDefinedToken, JSONToken } from '../types'
 import { JSONTokenType } from '../consts'
 
 export function* renderJSONAsLines(
@@ -12,7 +12,7 @@ export function* renderJSONAsLines(
   const scopeStack: number[] = []
 
   let currentIndex = 0
-  let line: JSONToken[] = []
+  let line: JSONDefinedToken[] = []
   for (const token of renderJSONAsToken({
     value,
     tabChar,

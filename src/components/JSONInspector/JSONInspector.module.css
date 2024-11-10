@@ -1,0 +1,29 @@
+.root {
+  .search-bar {
+    font-size: inherit;
+    margin-bottom: 0;
+
+    & > * {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .search-option-button {
+      padding-left: 1rem;
+      padding-right: 1rem;
+
+      border-color: var(--pico-secondary-border);
+      background-color: var(--pico-secondary-background);
+
+      &[aria-checked='true'] {
+        border-color: var(--pico-primary-border);
+        background-color: var(--pico-primary-background);
+      }
+    }
+
+    & + * {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+}
