@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { renderJSONAsLines } from './logic'
+import { renderJSONAsLines } from './renderJSONAsLines'
 
 describe('renderJSONAsLines', () => {
   test('scope index', () => {

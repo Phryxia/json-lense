@@ -3,7 +3,7 @@ import styles from './JSONRenderer.module.css'
 import { Fragment, useLayoutEffect, useMemo } from 'react'
 import type { IndexedJSONLine } from './types'
 import { JSONTokenType } from './consts'
-import { renderJSONAsLines } from './logic'
+import { renderJSONAsLines } from './logic/renderJSONAsLines'
 import { RenderedToken } from './RenderedToken'
 import { useFakeScroll } from './useFakeScroll'
 

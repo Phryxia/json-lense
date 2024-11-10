@@ -1,7 +1,7 @@
 import { fx } from '@fxts/core'
 import { Counter } from '@src/logic/shared/counter'
-import type { IndexedJSONLine, JSONToken } from './types'
-import { JSONTokenType } from './consts'
+import type { IndexedJSONLine, JSONToken } from '../types'
+import { JSONTokenType } from '../consts'
 
 export function* renderJSONAsLines(
   value: any,
