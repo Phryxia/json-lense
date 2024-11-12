@@ -12,8 +12,9 @@ export interface ReactorNode {
   reactor: Reactor
 }
 
-export interface ReactorCluster {
-  nodes: ReactorNode[]
+export interface HyperReactor extends Reactor {
+  nodes: ReactorNode
+  serializer: ReactSerializer<HyperReactor>
 }
 
 export interface ReactSerializer<T extends Reactor> {
