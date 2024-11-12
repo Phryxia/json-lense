@@ -16,7 +16,10 @@ type IReactorVisualContext = {
     dimension: Dimension
     id: number
   }
-  updateDimension(id: number, newSize: Partial<Dimension>): void
+  updateDimension(
+    id: number,
+    newSize: Partial<Dimension> | ((oldDim: Dimension) => Partial<Dimension>),
+  ): void
   deleteDimension(id: number): void
 }
 
@@ -94,12 +97,19 @@ export function ReactorVisualContextProvider({
   }, [])
 
   const updateDimension = useCallback(
-    (id: number, newDim: Partial<Dimension>) => {
+    (
+      id: number,
+      newDim: Partial<Dimension> | ((oldDim: Dimension) => Partial<Dimension>),
+    ) => {
       setDimensions((dims) => {
         if (!dims[id]) return dims
 
         const newDims = dims.slice()
         const target = (newDims[id] = { ...newDims[id] })
+
+        if (typeof newDim === 'function') {
+          newDim = newDim(target)
+        }
 
         for (const changedKey in newDim) {
           // @ts-ignore
