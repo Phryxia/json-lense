@@ -54,7 +54,7 @@ export function ReactorVisualContextProvider({
   poolSize.current = dimensions.length
 
   const createDimension = useCallback(
-    ({ x = 0, y = 0, w = 100, h = 30 }: Partial<Dimension>) => {
+    ({ x = 0, y = 0, w, h }: Partial<Dimension>) => {
       const newDimension = { x, y, w, h }
       const freeIndex = pop(freeStack, freeStackTop)
 

@@ -1,6 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { DOMAttributes } from 'react'
+import { DOMAttributes, PropsWithChildren } from 'react'
 import { useReactor } from './ReactorVisualContext'
 
 const cx = cnx.bind(styles)
@@ -12,7 +12,13 @@ type Props = {
   handleMouseUp: DOMAttributes<HTMLElement>['onMouseUp']
 }
 
-export function ReactorView({ id, handleMouseDown, handleMouseUp }: Props) {
+export function ReactorView({
+  id,
+  name,
+  handleMouseDown,
+  handleMouseUp,
+  children,
+}: PropsWithChildren<Props>) {
   const { dimensions } = useReactor()
   const dimension = dimensions[id]
 
@@ -22,13 +28,14 @@ export function ReactorView({ id, handleMouseDown, handleMouseUp }: Props) {
       style={{
         left: `${dimension.x}px`,
         top: `${dimension.y}px`,
-        width: `${dimension.w}px`,
-        height: `${dimension.h}px`,
+        width: dimension.w && `${dimension.w}px`,
+        height: dimension.h && `${dimension.h}px`,
       }}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
-      {/* <h1>{name}</h1> */}
+      <header>{name}</header>
+      {children}
     </article>
   )
 }

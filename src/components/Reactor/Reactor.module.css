@@ -8,6 +8,8 @@
 
   .node {
     position: relative;
+    width: min-content;
+
     h1 {
       font-size: 1rem;
     }

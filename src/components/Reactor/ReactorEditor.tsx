@@ -61,8 +61,6 @@ function ReactorEditorContents() {
           createDimension({
             x: Math.random() * 100,
             y: Math.random() * 100,
-            w: 20,
-            h: 20,
           })
         }
       >
