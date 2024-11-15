@@ -18,7 +18,7 @@ export function ReactorEditor() {
 }
 
 function ReactorEditorContents() {
-  const { dimensions, createDimension, updateDimension } = useReactorVisual()
+  const { dimensionPool } = useReactorVisual()
   const dragTarget = useRef(-1)
 
   const handleMouseDown = useCallback(
@@ -48,7 +48,7 @@ function ReactorEditorContents() {
       return
     }
 
-    updateDimension(dragTarget.current, ({ x, y }) => ({
+    dimensionPool.modify(dragTarget.current, ({ x, y }) => ({
       x: x + e.movementX,
       y: y + e.movementY,
     }))
@@ -58,7 +58,7 @@ function ReactorEditorContents() {
     <article className={cx('root')} onMouseMove={handleMouseMove}>
       <button
         onClick={() =>
-          createDimension({
+          dimensionPool.add({
             x: Math.random() * 100,
             y: Math.random() * 100,
           })
@@ -66,7 +66,7 @@ function ReactorEditorContents() {
       >
         ADD
       </button>
-      {dimensions.map((_, id) => (
+      {dimensionPool.elements.map((_, id) => (
         <ReactorView
           id={id}
           key={id}

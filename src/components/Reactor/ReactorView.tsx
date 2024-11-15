@@ -19,8 +19,8 @@ export function ReactorView({
   handleMouseUp,
   children,
 }: PropsWithChildren<Props>) {
-  const { dimensions } = useReactorVisual()
-  const dimension = dimensions[id]
+  const { dimensionPool } = useReactorVisual()
+  const dimension = dimensionPool.elements[id]
 
   return (
     <article

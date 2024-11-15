@@ -1,26 +1,9 @@
-import {
-  createContext,
-  MutableRefObject,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from 'react'
+import { createContext, PropsWithChildren, useContext } from 'react'
 import type { Dimension } from './types'
+import { type Pool, usePool } from '@src/logic/shared/usePool'
 
 type IReactorVisualContext = {
-  count: number
-  dimensions: Dimension[]
-  createDimension(size: Partial<Dimension>): {
-    dimension: Dimension
-    id: number
-  }
-  updateDimension(
-    id: number,
-    newSize: Partial<Dimension> | ((oldDim: Dimension) => Partial<Dimension>),
-  ): void
-  deleteDimension(id: number): void
+  dimensionPool: Pool<Dimension>
 }
 
 // @ts-ignore
@@ -43,111 +26,15 @@ export const useReactorVisual = () => useContext(ReactorVisualContext)
 export function ReactorVisualContextProvider({
   children,
 }: PropsWithChildren<{}>) {
-  const [dimensions, setDimensions] = useState<Dimension[]>([])
-
-  // to optimize pop & reallocation
-  const freeStack = useRef<number[]>([])
-  const freeStackTop = useRef<number>(-1)
-
-  // closure tunneling
-  const poolSize = useRef<number>(dimensions.length)
-  poolSize.current = dimensions.length
-
-  const createDimension = useCallback(
-    ({ x = 0, y = 0, w, h }: Partial<Dimension>) => {
-      const newDimension = { x, y, w, h }
-      const freeIndex = pop(freeStack, freeStackTop)
-
-      if (freeIndex != null) {
-        setDimensions((dims) => {
-          const newDims = dims.slice()
-          newDims[freeIndex] = newDimension
-          return newDims
-        })
-        return {
-          dimension: newDimension,
-          id: freeIndex,
-        }
-      }
-
-      setDimensions((dims) => {
-        const newDims = dims.slice()
-        newDims.push(newDimension)
-        return newDims
-      })
-      return {
-        dimension: newDimension,
-        id: poolSize.current++,
-      }
-    },
-    [],
-  )
-
-  const deleteDimension = useCallback((id: number) => {
-    setDimensions((dims) => {
-      const newDims = dims.slice()
-
-      // don't render when there is no such elements
-      if (!newDims[id]) return dims
-      delete newDims[id]
-      return newDims
-    })
-
-    push(freeStack, freeStackTop, id)
-  }, [])
-
-  const updateDimension = useCallback(
-    (
-      id: number,
-      newDim: Partial<Dimension> | ((oldDim: Dimension) => Partial<Dimension>),
-    ) => {
-      setDimensions((dims) => {
-        if (!dims[id]) return dims
-
-        const newDims = dims.slice()
-        const target = (newDims[id] = { ...newDims[id] })
-
-        if (typeof newDim === 'function') {
-          newDim = newDim(target)
-        }
-
-        for (const changedKey in newDim) {
-          // @ts-ignore
-          target[changedKey] = newDim[changedKey]
-        }
-        return newDims
-      })
-    },
-    [],
-  )
+  const dimensionPool = usePool<Dimension>()
 
   return (
     <ReactorVisualContext.Provider
       value={{
-        count: dimensions.length - freeStackTop.current - 1,
-        dimensions,
-        createDimension,
-        deleteDimension,
-        updateDimension,
+        dimensionPool,
       }}
     >
       {children}
     </ReactorVisualContext.Provider>
   )
-}
-
-function push<T>(
-  stack: MutableRefObject<T[]>,
-  top: MutableRefObject<number>,
-  el: T,
-) {
-  stack.current[++top.current] = el
-  return el
-}
-
-function pop<T>(stack: MutableRefObject<T[]>, top: MutableRefObject<number>) {
-  if (top.current < 0) {
-    return undefined
-  }
-  return stack.current[top.current--]
 }
