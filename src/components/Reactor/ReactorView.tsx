@@ -9,6 +9,8 @@ const cx = cnx.bind(styles)
 type Props = {
   id: number
   name: string
+  inputParams?: string[]
+  outputParams?: string[]
   handleMouseDown: DOMAttributes<HTMLElement>['onMouseDown']
   handleMouseUp: DOMAttributes<HTMLElement>['onMouseUp']
 }
@@ -16,6 +18,8 @@ type Props = {
 export function ReactorView({
   id,
   name,
+  inputParams,
+  outputParams,
   handleMouseDown,
   handleMouseUp,
   children,
@@ -37,14 +41,32 @@ export function ReactorView({
     >
       <header>{name}</header>
       <section className={cx('body')}>
-        <div className={cx('sockets', 'left')}>
-          <ReactorSocket name="s0" ownerReactorId={0} color="#844" isInput />
-        </div>
+        {inputParams && (
+          <div className={cx('sockets', 'left')}>
+            {inputParams.map((paramName) => (
+              <ReactorSocket
+                name={paramName}
+                key={paramName}
+                ownerReactorId={id}
+                color="#844"
+                isInput
+              />
+            ))}
+          </div>
+        )}
         {children}
-        <div className={cx('sockets')}>
-          <ReactorSocket name="t0" ownerReactorId={0} color="#844" />
-          <ReactorSocket name="t0" ownerReactorId={0} color="#844" />
-        </div>
+        {outputParams && (
+          <div className={cx('sockets')}>
+            {outputParams.map((paramName) => (
+              <ReactorSocket
+                name={paramName}
+                key={paramName}
+                ownerReactorId={id}
+                color="#844"
+              />
+            ))}
+          </div>
+        )}
       </section>
     </article>
   )

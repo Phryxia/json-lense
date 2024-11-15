@@ -73,6 +73,8 @@ function ReactorEditorContents() {
           name="test"
           handleMouseDown={(e) => handleMouseDown(e, id)}
           handleMouseUp={handleMouseUp}
+          inputParams={['a', 'b', 'c']}
+          outputParams={['d', 'e']}
         />
       ))}
     </article>
