@@ -2,6 +2,7 @@ import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import { DOMAttributes, PropsWithChildren } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
+import { ReactorSocket } from './ReactorSocket'
 
 const cx = cnx.bind(styles)
 
@@ -35,7 +36,16 @@ export function ReactorView({
       onMouseUp={handleMouseUp}
     >
       <header>{name}</header>
-      {children}
+      <section className={cx('body')}>
+        <div className={cx('sockets', 'left')}>
+          <ReactorSocket name="s0" ownerReactorId={0} color="#844" isInput />
+        </div>
+        {children}
+        <div className={cx('sockets')}>
+          <ReactorSocket name="t0" ownerReactorId={0} color="#844" />
+          <ReactorSocket name="t0" ownerReactorId={0} color="#844" />
+        </div>
+      </section>
     </article>
   )
 }
