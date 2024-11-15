@@ -13,7 +13,7 @@ export interface ReactorNode {
 }
 
 export interface HyperReactor extends Reactor {
-  nodes: ReactorNode
+  nodes: ReactorNode[]
   serializer: ReactSerializer<HyperReactor>
 }
 
