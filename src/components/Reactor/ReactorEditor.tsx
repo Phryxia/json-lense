@@ -4,7 +4,7 @@ import { MouseEvent, useCallback, useRef } from 'react'
 import { ReactorView } from './ReactorView'
 import {
   ReactorVisualContextProvider,
-  useReactor,
+  useReactorVisual,
 } from './ReactorVisualContext'
 
 const cx = cnx.bind(styles)
@@ -18,7 +18,7 @@ export function ReactorEditor() {
 }
 
 function ReactorEditorContents() {
-  const { dimensions, createDimension, updateDimension } = useReactor()
+  const { dimensions, createDimension, updateDimension } = useReactorVisual()
   const dragTarget = useRef(-1)
 
   const handleMouseDown = useCallback(

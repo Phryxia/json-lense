@@ -26,7 +26,7 @@ type IReactorVisualContext = {
 // @ts-ignore
 const ReactorVisualContext = createContext<IReactorVisualContext>()
 
-export const useReactor = () => useContext(ReactorVisualContext)
+export const useReactorVisual = () => useContext(ReactorVisualContext)
 
 /*
   Some technical notes

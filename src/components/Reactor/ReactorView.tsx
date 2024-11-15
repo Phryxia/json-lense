@@ -1,7 +1,7 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import { DOMAttributes, PropsWithChildren } from 'react'
-import { useReactor } from './ReactorVisualContext'
+import { useReactorVisual } from './ReactorVisualContext'
 
 const cx = cnx.bind(styles)
 
@@ -19,7 +19,7 @@ export function ReactorView({
   handleMouseUp,
   children,
 }: PropsWithChildren<Props>) {
-  const { dimensions } = useReactor()
+  const { dimensions } = useReactorVisual()
   const dimension = dimensions[id]
 
   return (
