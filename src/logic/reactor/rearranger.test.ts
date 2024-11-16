@@ -6,14 +6,12 @@ describe('rearranger', () => {
   test('single-path-to', () => {
     const r1 = createRearrangerReactor({
       name: 'rearranger',
-      data: {
-        schemas: [
-          {
-            from: ['k1', 'k2'],
-            to: ['k3', 'k4'],
-          },
-        ],
-      },
+      data: [
+        {
+          from: ['k1', 'k2'],
+          to: ['k3', 'k4'],
+        },
+      ],
     })
     const [o1] = r1.run([createMolecule({ k1: { k2: 42 } })])
 
@@ -23,13 +21,11 @@ describe('rearranger', () => {
   test('single-path', () => {
     const r1 = createRearrangerReactor({
       name: 'rearranger',
-      data: {
-        schemas: [
-          {
-            from: ['k1', 'k2'],
-          },
-        ],
-      },
+      data: [
+        {
+          from: ['k1', 'k2'],
+        },
+      ],
     })
     const [o1] = r1.run([createMolecule({ k1: { k2: 42 } })])
 
@@ -39,13 +35,11 @@ describe('rearranger', () => {
   test('single-to', () => {
     const r1 = createRearrangerReactor({
       name: 'rearranger',
-      data: {
-        schemas: [
-          {
-            to: ['k1', 'k2'],
-          },
-        ],
-      },
+      data: [
+        {
+          to: ['k1', 'k2'],
+        },
+      ],
     })
     const [o1] = r1.run([createMolecule(42)])
 
@@ -55,7 +49,7 @@ describe('rearranger', () => {
   test('single-copy', () => {
     const r1 = createRearrangerReactor({
       name: 'rearranger',
-      data: { schemas: [{}] },
+      data: [{}],
     })
     const [o1] = r1.run([createMolecule(42)])
 
@@ -65,18 +59,16 @@ describe('rearranger', () => {
   test('multi', () => {
     const r1 = createRearrangerReactor({
       name: 'rearranger',
-      data: {
-        schemas: [
-          {
-            from: ['k1'],
-            to: ['u1'],
-          },
-          {
-            from: ['k2', 'k3'],
-            to: ['u2'],
-          },
-        ],
-      },
+      data: [
+        {
+          from: ['k1'],
+          to: ['u1'],
+        },
+        {
+          from: ['k2', 'k3'],
+          to: ['u2'],
+        },
+      ],
     })
     const [o1] = r1.run([
       createMolecule({ k1: 'v1', k2: { k3: 'v3' }, d: null }),

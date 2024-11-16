@@ -1,4 +1,5 @@
 import type { Molecule } from './molecule'
+import type { Serializable } from './serializable'
 
 export interface Reactor {
   name: string
@@ -11,11 +12,11 @@ export interface ReactorNode {
   reactor: Reactor
 }
 
-export type SerializedReactor = {
+export type SerializedReactor<Schema extends Serializable> = {
   name: string
-  data: any
+  data: Schema
 }
 
-export type ReactorCreator<Schema extends SerializedReactor> = (
-  s: Schema,
+export type ReactorCreator<Schema extends Serializable> = (
+  s: SerializedReactor<Schema>,
 ) => Reactor

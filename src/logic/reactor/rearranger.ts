@@ -1,21 +1,10 @@
-import type {
-  Reactor,
-  ReactorCreator,
-  SerializedReactor,
-} from '@src/model/reactor'
+import type { Reactor, SerializedReactor } from '@src/model/reactor'
 import type { Serializable } from '@src/model/serializable'
 import { deepClone } from '../shared/deepClone'
 import { rget, rset } from '../shared/rget'
 import { createMolecule } from '../molecule'
 
-export interface RearrangerSchema extends SerializedReactor {
-  name: 'rearranger'
-  data: {
-    schemas: RearrangerMapping[]
-  }
-}
-
-interface RearrangerMapping {
+type RearrangerMapping = Serializable & {
   from?: string[] // when undefined, it's means root
   to?: (string | number)[] // when undefined, it's means root
   /**
@@ -25,12 +14,10 @@ interface RearrangerMapping {
   fallback?: Serializable
 }
 
-export const createRearrangerReactor: ReactorCreator<RearrangerSchema> = (
-  schema: RearrangerSchema,
+export const createRearrangerReactor = (
+  schema: SerializedReactor<RearrangerMapping[]>,
 ) => {
-  const {
-    data: { schemas },
-  } = schema
+  const { data: schemas } = schema
 
   return {
     name: 'rearranger',
