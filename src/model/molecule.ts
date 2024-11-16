@@ -4,6 +4,7 @@ export type MoleculeType =
   | 'boolean'
   | 'string'
   | 'number'
+  | 'error'
   | { [K in string]: MoleculeType }
   | MoleculeType[]
 
@@ -17,13 +18,13 @@ export type Molecule =
         | number
         | { [K in string]: Molecule }
         | Molecule[]
-      type: MoleculeType
+      type: Exclude<MoleculeType, 'error'>
       error?: false
       reason?: undefined
     }
   | {
       value?: undefined
-      type?: undefined
+      type: 'error'
       error: true
       reason?: string
     }

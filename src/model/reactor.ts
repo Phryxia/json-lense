@@ -3,7 +3,6 @@ import type { Molecule } from './molecule'
 export interface Reactor {
   name: string
   run(molecules: Molecule[]): Molecule[]
-  serializer: ReactSerializer<Reactor>
 }
 
 export interface ReactorNode {
@@ -12,12 +11,11 @@ export interface ReactorNode {
   reactor: Reactor
 }
 
-export interface HyperReactor extends Reactor {
-  nodes: ReactorNode[]
-  serializer: ReactSerializer<HyperReactor>
+export type SerializedReactor = {
+  name: string
+  data: any
 }
 
-export interface ReactSerializer<T extends Reactor> {
-  parse(s: string): T
-  stringify(): string
-}
+export type ReactorCreator<Schema extends SerializedReactor> = (
+  s: Schema,
+) => Reactor

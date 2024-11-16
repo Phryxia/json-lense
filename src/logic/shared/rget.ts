@@ -21,6 +21,7 @@ export function rget(
     } else {
       return {
         error: true,
+        type: 'error',
         reason: `Cannot reach ${path.join('.')}: property ${key} doesn't exists`,
       }
     }
