@@ -15,8 +15,3 @@ export type Connection = {
   source: ConnectionRequest
   target: ConnectionRequest
 }
-
-export type ConnectionPerNode = {
-  input: Connection[]
-  output: Connection[]
-}

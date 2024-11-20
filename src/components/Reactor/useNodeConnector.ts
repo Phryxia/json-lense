@@ -1,58 +1,89 @@
 import { useCallback, useState } from 'react'
-import type { Connection, ConnectionPerNode, ConnectionRequest } from './types'
+import { produce } from 'immer'
+import type { Connection, ConnectionRequest } from './types'
 
 export function useNodeConnector() {
-  const [source, setSource] = useState<ConnectionRequest>()
-
-  const [connectionMap, setConnectionMap] = useState<ConnectionPerNode[]>([])
+  const [waiting, setWaiting] = useState<ConnectionRequest>()
+  const [isSource, setIsSource] = useState(true)
   const [connections, setConnections] = useState<Connection[]>([])
 
   const cancel = useCallback(() => {
-    setSource(undefined)
+    setWaiting(undefined)
+    setIsSource(true)
   }, [])
+
+  const findConnection = useCallback(
+    (req: ConnectionRequest) =>
+      connections.find(
+        (conn) =>
+          compareConnectionRequest(conn.source, req) ||
+          compareConnectionRequest(conn.target, req),
+      ),
+    [connections],
+  )
+
+  const remove = useCallback(
+    (req: ConnectionRequest) => {
+      setConnections(
+        produce((conns) =>
+          conns.filter(
+            (conn) =>
+              !compareConnectionRequest(conn.source, req) &&
+              !compareConnectionRequest(conn.target, req),
+          ),
+        ),
+      )
+    },
+    [connections],
+  )
 
   const tryConnection = useCallback(
     (req: ConnectionRequest) => {
-      if (source) {
+      if (waiting) {
         if (
-          source.nodeId !== req.nodeId &&
-          source.socketType !== req.socketType &&
-          !connections.some((connection) =>
-            compareConnectionRequest(connection.source, req),
-          )
+          waiting.nodeId !== req.nodeId &&
+          waiting.socketType !== req.socketType &&
+          !findConnection(req)
         ) {
-          // list type
-          const newConnection = {
-            source: source,
-            target: req,
-          }
+          const newConnection = isSource
+            ? {
+                source: waiting,
+                target: req,
+              }
+            : {
+                source: req,
+                target: waiting,
+              }
           setConnections([...connections, newConnection])
-
-          // array type
-          const newConnectionMap = connectionMap.slice()
-          newConnectionMap[source.nodeId] ??= {
-            input: [],
-            output: [],
-          }
-          newConnectionMap[source.nodeId][source.socketType].push(newConnection)
-          newConnectionMap[req.nodeId] ??= { input: [], output: [] }
-          newConnectionMap[req.nodeId][req.socketType].push(newConnection)
-          setConnectionMap(newConnectionMap)
-
-          setSource(undefined)
         }
         cancel()
       } else {
-        setSource(req)
+        const conn = findConnection(req)
+
+        if (conn) {
+          if (compareConnectionRequest(conn.source, req)) {
+            setWaiting(conn.target)
+            setIsSource(false)
+          } else {
+            setWaiting(conn.source)
+            setIsSource(true)
+          }
+          remove(req)
+        } else {
+          setWaiting(req)
+          setIsSource(true)
+        }
       }
     },
-    [source, connectionMap, connections],
+    [waiting, connections],
   )
 
   return {
     connections,
     cancel,
     tryConnection,
+    waiting,
+    isSource,
   }
 }
 

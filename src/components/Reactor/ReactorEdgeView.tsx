@@ -4,13 +4,18 @@ import type { Connection, ConnectionRequest } from './types'
 import { getReactorKey, getReactorSocketKey } from './utils'
 
 type Props = {
-  connection: Connection
+  connection: Partial<Connection>
 }
 
 export function ReactorEdgeView({ connection }: Props) {
-  const { dimensionPool } = useReactorVisual()
-  const sourceDimension = dimensionPool.get(connection.source.nodeId)
-  const targetDimension = dimensionPool.get(connection.target.nodeId)
+  const { dimensionPool, mouse } = useReactorVisual()
+  const mouseFallback = { x: mouse.mouseX, y: mouse.mouseY }
+  const sourceDimension = connection.source
+    ? dimensionPool.get(connection.source.nodeId)
+    : mouseFallback
+  const targetDimension = connection.target
+    ? dimensionPool.get(connection.target.nodeId)
+    : mouseFallback
 
   const [biasX1, biasY1] = useSocketBias(connection.source)
   const [biasX2, biasY2] = useSocketBias(connection.target)
@@ -26,11 +31,13 @@ export function ReactorEdgeView({ connection }: Props) {
   )
 }
 
-function useSocketBias(socket: ConnectionRequest) {
+function useSocketBias(socket: ConnectionRequest | undefined) {
   const [biasX, setBiasX] = useState(0)
   const [biasY, setBiasY] = useState(0)
 
   useLayoutEffect(() => {
+    if (!socket) return
+
     const nodeId = getReactorKey(socket.nodeId)
     const nodeDom = document.getElementById(nodeId)
 
@@ -52,7 +59,7 @@ function useSocketBias(socket: ConnectionRequest) {
 
     setBiasX(sx - px + 0.5 * width)
     setBiasY(sy - py + 0.5 * height)
-  }, [socket.nodeId, socket.socketId, socket.socketType])
+  }, [socket?.nodeId, socket?.socketId, socket?.socketType])
 
   return [biasX, biasY]
 }

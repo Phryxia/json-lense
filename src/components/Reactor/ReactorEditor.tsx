@@ -20,7 +20,7 @@ export function ReactorEditor() {
 }
 
 function ReactorEditorContents() {
-  const { dimensionPool, connector } = useReactorVisual()
+  const { dimensionPool, connector, mouse } = useReactorVisual()
   const dragTarget = useRef(-1)
 
   const handleMouseDown = useCallback(
@@ -57,7 +57,11 @@ function ReactorEditorContents() {
   }, [])
 
   return (
-    <article className={cx('root')} onMouseMove={handleMouseMove}>
+    <article
+      ref={mouse.editorRef}
+      className={cx('root')}
+      onMouseMove={handleMouseMove}
+    >
       {/* Edges */}
       <svg className={cx('edges')}>
         {connector.connections.map((connection) => (
@@ -66,6 +70,13 @@ function ReactorEditorContents() {
             key={getConnectionKey(connection)}
           />
         ))}
+        {connector.waiting && (
+          <ReactorEdgeView
+            connection={{
+              [connector.isSource ? 'source' : 'target']: connector.waiting,
+            }}
+          />
+        )}
       </svg>
 
       {dimensionPool.elements.map((_, id) => (
