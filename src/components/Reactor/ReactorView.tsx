@@ -3,6 +3,7 @@ import styles from './Reactor.module.css'
 import { DOMAttributes, PropsWithChildren } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
 import { ReactorSocket } from './ReactorSocket'
+import { getReactorKey } from './utils'
 
 const cx = cnx.bind(styles)
 
@@ -29,6 +30,7 @@ export function ReactorView({
 
   return (
     <article
+      id={getReactorKey(id)}
       className={cx('node')}
       style={{
         left: `${dimension.x}px`,
@@ -43,8 +45,9 @@ export function ReactorView({
       <section className={cx('body')}>
         {inputParams && (
           <div className={cx('sockets', 'left')}>
-            {inputParams.map((paramName) => (
+            {inputParams.map((paramName, socketId) => (
               <ReactorSocket
+                id={socketId}
                 name={paramName}
                 key={paramName}
                 ownerReactorId={id}
@@ -57,8 +60,9 @@ export function ReactorView({
         {children}
         {outputParams && (
           <div className={cx('sockets')}>
-            {outputParams.map((paramName) => (
+            {outputParams.map((paramName, socketId) => (
               <ReactorSocket
+                id={socketId}
                 name={paramName}
                 key={paramName}
                 ownerReactorId={id}

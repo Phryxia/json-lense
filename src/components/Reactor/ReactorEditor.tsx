@@ -6,6 +6,8 @@ import {
   ReactorVisualContextProvider,
   useReactorVisual,
 } from './ReactorVisualContext'
+import { ReactorEdgeView } from './ReactorEdgeView'
+import { getConnectionKey } from './utils'
 
 const cx = cnx.bind(styles)
 
@@ -18,7 +20,7 @@ export function ReactorEditor() {
 }
 
 function ReactorEditorContents() {
-  const { dimensionPool } = useReactorVisual()
+  const { dimensionPool, connector } = useReactorVisual()
   const dragTarget = useRef(-1)
 
   const handleMouseDown = useCallback(
@@ -56,16 +58,16 @@ function ReactorEditorContents() {
 
   return (
     <article className={cx('root')} onMouseMove={handleMouseMove}>
-      <button
-        onClick={() =>
-          dimensionPool.add({
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-          })
-        }
-      >
-        ADD
-      </button>
+      {/* Edges */}
+      <svg className={cx('edges')}>
+        {connector.connections.map((connection) => (
+          <ReactorEdgeView
+            connection={connection}
+            key={getConnectionKey(connection)}
+          />
+        ))}
+      </svg>
+
       {dimensionPool.elements.map((_, id) => (
         <ReactorView
           id={id}
@@ -77,6 +79,19 @@ function ReactorEditorContents() {
           outputParams={['d', 'e']}
         />
       ))}
+
+      <div className={cx('ui')}>
+        <button
+          onClick={() =>
+            dimensionPool.add({
+              x: Math.random() * 100,
+              y: Math.random() * 100,
+            })
+          }
+        >
+          ADD
+        </button>
+      </div>
     </article>
   )
 }

@@ -4,3 +4,19 @@ export type Dimension = {
   w?: number
   h?: number
 }
+
+export type ConnectionRequest = {
+  nodeId: number
+  socketType: 'input' | 'output'
+  socketId: number
+}
+
+export type Connection = {
+  source: ConnectionRequest
+  target: ConnectionRequest
+}
+
+export type ConnectionPerNode = {
+  input: Connection[]
+  output: Connection[]
+}
