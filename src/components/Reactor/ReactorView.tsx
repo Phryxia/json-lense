@@ -13,7 +13,6 @@ type Props = {
   inputParams?: string[]
   outputParams?: string[]
   handleMouseDown: DOMAttributes<HTMLElement>['onMouseDown']
-  handleMouseUp: DOMAttributes<HTMLElement>['onMouseUp']
 }
 
 export function ReactorView({
@@ -22,7 +21,6 @@ export function ReactorView({
   inputParams,
   outputParams,
   handleMouseDown,
-  handleMouseUp,
   children,
 }: PropsWithChildren<Props>) {
   const { dimensionPool } = useReactorVisual()
@@ -39,7 +37,6 @@ export function ReactorView({
         height: dimension.h && `${dimension.h}px`,
       }}
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
     >
       <header>{name}</header>
       <section className={cx('body')}>

@@ -1,6 +1,11 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { MouseEvent, useCallback, useRef } from 'react'
+import {
+  MouseEvent as ReactMouseEvent,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 import { ReactorView } from './ReactorView'
 import {
   ReactorVisualContextProvider,
@@ -8,6 +13,7 @@ import {
 } from './ReactorVisualContext'
 import { ReactorEdgeView } from './ReactorEdgeView'
 import { getConnectionKey } from './utils'
+import { checkOutside } from '@src/logic/shared/outsideClick'
 
 const cx = cnx.bind(styles)
 
@@ -24,18 +30,33 @@ function ReactorEditorContents() {
   const dragTarget = useRef(-1)
 
   const handleMouseDown = useCallback(
-    (e: MouseEvent<HTMLElement>, id: number) => {
+    (e: ReactMouseEvent<HTMLElement>, id: number) => {
       e.stopPropagation()
       dragTarget.current = id
     },
     [],
   )
 
-  const handleMouseUp = useCallback(() => {
-    dragTarget.current = -1
-  }, [])
+  const handleMouseUp = useCallback(
+    (e: MouseEvent) => {
+      dragTarget.current = -1
 
-  const handleMouseMove = useCallback((e: MouseEvent<HTMLElement>) => {
+      if (
+        connector.waiting &&
+        checkOutside(e, (dom) => dom.id.includes('socket'))
+      ) {
+        connector.cancel()
+      }
+    },
+    [connector.waiting],
+  )
+
+  useLayoutEffect(() => {
+    addEventListener('mouseup', handleMouseUp)
+    return () => removeEventListener('mouseup', handleMouseUp)
+  }, [connector.waiting])
+
+  const handleMouseMove = useCallback((e: ReactMouseEvent<HTMLElement>) => {
     if (dragTarget.current === -1) return
 
     const rootBound = e.currentTarget.getBoundingClientRect()
@@ -85,7 +106,6 @@ function ReactorEditorContents() {
           key={id}
           name="test"
           handleMouseDown={(e) => handleMouseDown(e, id)}
-          handleMouseUp={handleMouseUp}
           inputParams={['a', 'b', 'c']}
           outputParams={['d', 'e']}
         />
