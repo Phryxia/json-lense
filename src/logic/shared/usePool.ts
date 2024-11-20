@@ -2,6 +2,18 @@ import { type MutableRefObject, useCallback, useRef, useState } from 'react'
 
 export type Pool<Element> = ReturnType<typeof usePool<Element>>
 
+/*
+  Some technical notes
+
+  [...arr] is not same to arr.slice()
+  The former one coerce empty into undefined
+  The latter one preserve empty holes
+  DO NOT COERCE EMPTY INTO UNDEFINED (to get better performance)
+  Note that iterator coerce empty to undefined
+
+  Also note that in strict mode, rerendering occurs twice.
+  Therefore YOU MUST NOT MUTATE stack inside of setState callback.
+*/
 export function usePool<Element>() {
   const [elements, setElements] = useState<Element[]>([])
 
