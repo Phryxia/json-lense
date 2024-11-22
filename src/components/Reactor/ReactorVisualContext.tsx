@@ -1,11 +1,12 @@
-import { createContext, PropsWithChildren, useContext } from 'react'
-import { type Pool, usePool } from '@src/logic/shared/usePool'
-import type { Dimension } from './types'
-import { useEdgeEditor } from './useNodeConnector'
+import { createContext, PropsWithChildren, useContext, useRef } from 'react'
+import { DirectedGraph } from '@src/logic/shared/graph'
+import type { ReactorEdge } from './types'
+import { useEdgeEditor } from './useEdgeEditor'
 import { useMouse } from './useMouse'
+import { useNodeEditor } from './useNodeEditor'
 
 type IReactorVisualContext = {
-  dimensionPool: Pool<Dimension>
+  nodeEditor: ReturnType<typeof useNodeEditor>
   edgeEditor: ReturnType<typeof useEdgeEditor>
   mouse: ReturnType<typeof useMouse>
 }
@@ -16,14 +17,15 @@ const ReactorVisualContext = createContext<IReactorVisualContext>()
 export const useReactorVisual = () => useContext(ReactorVisualContext)
 
 export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
-  const dimensionPool = usePool<Dimension>()
-  const edgeEditor = useEdgeEditor()
+  const graph = useRef(new DirectedGraph<number, ReactorEdge>())
+  const nodeEditor = useNodeEditor(graph)
+  const edgeEditor = useEdgeEditor(graph)
   const mouse = useMouse()
 
   return (
     <ReactorVisualContext.Provider
       value={{
-        dimensionPool,
+        nodeEditor,
         edgeEditor,
         mouse,
       }}

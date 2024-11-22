@@ -8,13 +8,13 @@ type Props = {
 }
 
 export function ReactorEdgeView({ edge }: Props) {
-  const { dimensionPool, mouse } = useReactorVisual()
+  const { nodeEditor, mouse } = useReactorVisual()
   const mouseFallback = { x: mouse.mouseX, y: mouse.mouseY }
   const inletPosition = edge.inlet
-    ? dimensionPool.get(edge.inlet.nodeId)
+    ? nodeEditor.nodes[edge.inlet.nodeId]
     : mouseFallback
   const outletPosition = edge.outlet
-    ? dimensionPool.get(edge.outlet.nodeId)
+    ? nodeEditor.nodes[edge.outlet.nodeId]
     : mouseFallback
 
   const [biasX1, biasY1] = useSocketBias(edge.inlet)

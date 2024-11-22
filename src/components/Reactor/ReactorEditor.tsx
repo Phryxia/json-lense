@@ -23,7 +23,7 @@ export function ReactorEditor() {
 }
 
 function ReactorEditorContents() {
-  const { dimensionPool, edgeEditor, mouse } = useReactorVisual()
+  const { nodeEditor, edgeEditor, mouse } = useReactorVisual()
   const draggingNodeId = useRef(-1)
 
   const handleMouseDown = useCallback(
@@ -68,7 +68,7 @@ function ReactorEditorContents() {
       return
     }
 
-    dimensionPool.modify(draggingNodeId.current, ({ x, y }) => ({
+    nodeEditor.modify(draggingNodeId.current, ({ x, y }) => ({
       x: x + e.movementX,
       y: y + e.movementY,
     }))
@@ -98,7 +98,7 @@ function ReactorEditorContents() {
         )}
       </svg>
 
-      {dimensionPool.elements.map((_, nodeId) => (
+      {nodeEditor.nodes.map((_, nodeId) => (
         <ReactorNodeView
           id={nodeId}
           key={nodeId}
@@ -112,7 +112,7 @@ function ReactorEditorContents() {
       <div className={cx('ui')}>
         <button
           onClick={() =>
-            dimensionPool.add({
+            nodeEditor.add({
               x: Math.random() * 100,
               y: Math.random() * 100,
             })

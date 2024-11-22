@@ -1,17 +1,18 @@
+import { fx } from '@fxts/core'
 import { Queue } from './queue'
 
 export class DirectedGraph<V, E> {
   private nodes = new Set<V>()
-  private forwardEdges = new Map<V, Map<V, E>>()
-  private backwardEdges = new Map<V, Map<V, E>>()
+  private forwardEdges = new Map<V, Map<V, E[]>>()
+  private backwardEdges = new Map<V, Map<V, E[]>>()
 
   copy(): DirectedGraph<V, E> {
     const graph = new DirectedGraph<V, E>()
 
     this.nodes.forEach((node) => graph.addNode(node))
     this.nodes.forEach((from) => {
-      this.forwardEdges.get(from)?.forEach((label, to) => {
-        graph.connect(from, to, label)
+      this.forwardEdges.get(from)?.forEach((labels, to) => {
+        labels.forEach((label) => graph.connect(from, to, label))
       })
     })
     return graph
@@ -43,22 +44,40 @@ export class DirectedGraph<V, E> {
   connect(from: V, to: V, label: E) {
     if (!this.nodes.has(from) || !this.nodes.has(to)) return
 
-    this.forwardEdges.get(from)?.set(to, label)
-    this.backwardEdges.get(to)?.set(from, label)
+    const forward = this.forwardEdges.get(from)
+    forward?.set(to, [...(forward?.get(to) ?? []), label])
+
+    const backward = this.backwardEdges.get(to)
+    backward?.set(from, [...(backward?.get(from) ?? []), label])
   }
 
-  disconnect(from: V, to: V) {
+  disconnect(from: V, to: V, label: E) {
     if (!this.nodes.has(from) || !this.nodes.has(to)) return
 
-    this.forwardEdges.get(from)?.delete(to)
-    this.backwardEdges.get(to)?.delete(from)
+    const forward = this.forwardEdges.get(from)
+    const nextF = removeEmptyList(forward?.get(to)?.filter((l) => l !== label))
+    if (nextF) {
+      forward?.set(to, nextF)
+    } else {
+      forward?.delete(to)
+    }
+
+    const backward = this.backwardEdges.get(to)
+    const nextB = removeEmptyList(
+      forward?.get(from)?.filter((l) => l !== label),
+    )
+    if (nextB) {
+      backward?.set(from, nextB)
+    } else {
+      backward?.delete(from)
+    }
   }
 
-  getForwardNeighbors(node: V): Map<V, E> {
+  getForwardNeighbors(node: V): Map<V, E[]> {
     return new Map(this.forwardEdges.get(node))
   }
 
-  getBackwardNeighbors(node: V): Map<V, E> {
+  getBackwardNeighbors(node: V): Map<V, E[]> {
     return new Map(this.backwardEdges.get(node))
   }
 
@@ -69,7 +88,9 @@ export class DirectedGraph<V, E> {
   get edgeCount() {
     let count = 0
     this.nodes.forEach((node) => {
-      count += this.forwardEdges.get(node)?.size || 0
+      count += fx(
+        this.forwardEdges.get(node)?.values() ?? ([] as E[][]),
+      ).reduce((sum, edges) => sum + edges.length, 0)
     })
     return count
   }
@@ -124,4 +145,8 @@ export class DirectedGraph<V, E> {
 
     return visited !== this.nodes.size
   }
+}
+
+function removeEmptyList<T>(list?: T[]) {
+  return !list?.length ? undefined : list
 }

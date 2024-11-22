@@ -23,8 +23,8 @@ export function ReactorNodeView({
   handleMouseDown,
   children,
 }: PropsWithChildren<Props>) {
-  const { dimensionPool } = useReactorVisual()
-  const dimension = dimensionPool.elements[id]
+  const { nodeEditor } = useReactorVisual()
+  const dimension = nodeEditor.nodes[id]
 
   return (
     <article
