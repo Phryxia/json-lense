@@ -11,8 +11,8 @@ export function getReactorSocketKey({
 }: ReactorSocket) {
   return `reactor-socket-${nodeId}-${socketId}-${socketType}`
 }
-export function getReactorEdgeKey({ source, target }: ReactorEdge) {
-  return `${getReactorSocketKey(source)}-${getReactorSocketKey(target)}`
+export function getReactorEdgeKey({ inlet, outlet }: ReactorEdge) {
+  return `${getReactorSocketKey(inlet)}-${getReactorSocketKey(outlet)}`
 }
 
 export function compareSocket(a: ReactorSocket, b: ReactorSocket) {

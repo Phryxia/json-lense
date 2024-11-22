@@ -10,22 +10,22 @@ type Props = {
 export function ReactorEdgeView({ edge }: Props) {
   const { dimensionPool, mouse } = useReactorVisual()
   const mouseFallback = { x: mouse.mouseX, y: mouse.mouseY }
-  const sourceDimension = edge.source
-    ? dimensionPool.get(edge.source.nodeId)
+  const inletPosition = edge.inlet
+    ? dimensionPool.get(edge.inlet.nodeId)
     : mouseFallback
-  const targetDimension = edge.target
-    ? dimensionPool.get(edge.target.nodeId)
+  const outletPosition = edge.outlet
+    ? dimensionPool.get(edge.outlet.nodeId)
     : mouseFallback
 
-  const [biasX1, biasY1] = useSocketBias(edge.source)
-  const [biasX2, biasY2] = useSocketBias(edge.target)
+  const [biasX1, biasY1] = useSocketBias(edge.inlet)
+  const [biasX2, biasY2] = useSocketBias(edge.outlet)
 
   return (
     <line
-      x1={sourceDimension.x + biasX1}
-      y1={sourceDimension.y + biasY1}
-      x2={targetDimension.x + biasX2}
-      y2={targetDimension.y + biasY2}
+      x1={inletPosition.x + biasX1}
+      y1={inletPosition.y + biasY1}
+      x2={outletPosition.x + biasX2}
+      y2={outletPosition.y + biasY2}
       stroke="black"
     />
   )

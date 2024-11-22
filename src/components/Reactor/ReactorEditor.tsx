@@ -90,8 +90,9 @@ function ReactorEditorContents() {
         {edgeEditor.reservedSocket && (
           <ReactorEdgeView
             edge={{
-              [edgeEditor.isSource ? 'source' : 'target']:
-                edgeEditor.reservedSocket,
+              [edgeEditor.reservedSocket.socketType === 'input'
+                ? 'inlet'
+                : 'outlet']: edgeEditor.reservedSocket,
             }}
           />
         )}

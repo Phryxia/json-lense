@@ -21,9 +21,9 @@ export function ReactorSocket({
   isInput,
   color = '#444',
 }: Props) {
-  const { edgeEditor: connector } = useReactorVisual()
+  const { edgeEditor } = useReactorVisual()
 
-  const connectionRequest = {
+  const socket = {
     nodeId: ownerReactorId,
     socketId: id,
     socketType: isInput ? 'input' : 'output',
@@ -31,11 +31,9 @@ export function ReactorSocket({
 
   return (
     <button
-      id={getReactorSocketKey(connectionRequest)}
+      id={getReactorSocketKey(socket)}
       className={cx('socket', { reverse: isInput })}
-      onClick={() => {
-        connector.tryConnection(connectionRequest)
-      }}
+      onClick={() => edgeEditor.tryConnection(socket)}
     >
       <span className={cx('name')}>{name}</span>
       <div className={cx('circle')} style={{ backgroundColor: color }} />

@@ -12,6 +12,6 @@ export type ReactorSocket = {
 }
 
 export type ReactorEdge = {
-  source: ReactorSocket
-  target: ReactorSocket
+  inlet: ReactorSocket & { socketType: 'input' }
+  outlet: ReactorSocket & { socketType: 'output' }
 }
