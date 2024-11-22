@@ -1,12 +1,12 @@
 import { createContext, PropsWithChildren, useContext } from 'react'
 import { type Pool, usePool } from '@src/logic/shared/usePool'
 import type { Dimension } from './types'
-import { useNodeConnector } from './useNodeConnector'
+import { useEdgeEditor } from './useNodeConnector'
 import { useMouse } from './useMouse'
 
 type IReactorVisualContext = {
   dimensionPool: Pool<Dimension>
-  connector: ReturnType<typeof useNodeConnector>
+  edgeEditor: ReturnType<typeof useEdgeEditor>
   mouse: ReturnType<typeof useMouse>
 }
 
@@ -15,18 +15,16 @@ const ReactorVisualContext = createContext<IReactorVisualContext>()
 
 export const useReactorVisual = () => useContext(ReactorVisualContext)
 
-export function ReactorVisualContextProvider({
-  children,
-}: PropsWithChildren<{}>) {
+export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
   const dimensionPool = usePool<Dimension>()
-  const connector = useNodeConnector()
+  const edgeEditor = useEdgeEditor()
   const mouse = useMouse()
 
   return (
     <ReactorVisualContext.Provider
       value={{
         dimensionPool,
-        connector,
+        edgeEditor,
         mouse,
       }}
     >

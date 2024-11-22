@@ -1,63 +1,60 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import {
-  MouseEvent as ReactMouseEvent,
+  type MouseEvent as ReactMouseEvent,
   useCallback,
   useLayoutEffect,
   useRef,
 } from 'react'
-import { ReactorView } from './ReactorView'
-import {
-  ReactorVisualContextProvider,
-  useReactorVisual,
-} from './ReactorVisualContext'
+import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
+import { ReactorVisualProvider, useReactorVisual } from './ReactorVisualContext'
+import { getReactorEdgeKey } from './utils'
+import { ReactorNodeView } from './ReactorNodeView'
 import { ReactorEdgeView } from './ReactorEdgeView'
-import { getConnectionKey } from './utils'
-import { checkOutside } from '@src/logic/shared/outsideClick'
 
 const cx = cnx.bind(styles)
 
 export function ReactorEditor() {
   return (
-    <ReactorVisualContextProvider>
+    <ReactorVisualProvider>
       <ReactorEditorContents />
-    </ReactorVisualContextProvider>
+    </ReactorVisualProvider>
   )
 }
 
 function ReactorEditorContents() {
-  const { dimensionPool, connector, mouse } = useReactorVisual()
-  const dragTarget = useRef(-1)
+  const { dimensionPool, edgeEditor, mouse } = useReactorVisual()
+  const draggingNodeId = useRef(-1)
 
   const handleMouseDown = useCallback(
     (e: ReactMouseEvent<HTMLElement>, id: number) => {
       e.stopPropagation()
-      dragTarget.current = id
+      draggingNodeId.current = id
     },
     [],
   )
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
-      dragTarget.current = -1
+      draggingNodeId.current = -1
 
       if (
-        connector.waiting &&
-        checkOutside(e, (dom) => dom.id.includes('socket'))
+        edgeEditor.reservedSocket &&
+        checkOutsideMouseEvent(e, (dom) => dom.id.includes('socket'))
       ) {
-        connector.cancel()
+        edgeEditor.cancelConnection()
       }
     },
-    [connector.waiting],
+    [edgeEditor.reservedSocket],
   )
 
   useLayoutEffect(() => {
     addEventListener('mouseup', handleMouseUp)
     return () => removeEventListener('mouseup', handleMouseUp)
-  }, [connector.waiting])
+  }, [handleMouseUp])
 
   const handleMouseMove = useCallback((e: ReactMouseEvent<HTMLElement>) => {
-    if (dragTarget.current === -1) return
+    if (draggingNodeId.current === -1) return
 
     const rootBound = e.currentTarget.getBoundingClientRect()
 
@@ -67,11 +64,11 @@ function ReactorEditorContents() {
       rootBound.top >= e.pageY ||
       rootBound.bottom <= e.pageY
     ) {
-      dragTarget.current = -1
+      draggingNodeId.current = -1
       return
     }
 
-    dimensionPool.modify(dragTarget.current, ({ x, y }) => ({
+    dimensionPool.modify(draggingNodeId.current, ({ x, y }) => ({
       x: x + e.movementX,
       y: y + e.movementY,
     }))
@@ -83,29 +80,29 @@ function ReactorEditorContents() {
       className={cx('root')}
       onMouseMove={handleMouseMove}
     >
-      {/* Edges */}
       <svg className={cx('edges')}>
-        {connector.connections.map((connection) => (
-          <ReactorEdgeView
-            connection={connection}
-            key={getConnectionKey(connection)}
-          />
+        {/* Defined edges */}
+        {edgeEditor.edges.map((edge) => (
+          <ReactorEdgeView edge={edge} key={getReactorEdgeKey(edge)} />
         ))}
-        {connector.waiting && (
+
+        {/* Current working edge */}
+        {edgeEditor.reservedSocket && (
           <ReactorEdgeView
-            connection={{
-              [connector.isSource ? 'source' : 'target']: connector.waiting,
+            edge={{
+              [edgeEditor.isSource ? 'source' : 'target']:
+                edgeEditor.reservedSocket,
             }}
           />
         )}
       </svg>
 
-      {dimensionPool.elements.map((_, id) => (
-        <ReactorView
-          id={id}
-          key={id}
+      {dimensionPool.elements.map((_, nodeId) => (
+        <ReactorNodeView
+          id={nodeId}
+          key={nodeId}
           name="test"
-          handleMouseDown={(e) => handleMouseDown(e, id)}
+          handleMouseDown={(e) => handleMouseDown(e, nodeId)}
           inputParams={['a', 'b', 'c']}
           outputParams={['d', 'e']}
         />

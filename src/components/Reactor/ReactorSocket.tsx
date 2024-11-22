@@ -2,7 +2,7 @@ import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import { useReactorVisual } from './ReactorVisualContext'
 import { getReactorSocketKey } from './utils'
-import type { ConnectionRequest } from './types'
+import type { ReactorSocket } from './types'
 
 const cx = cnx.bind(styles)
 
@@ -21,13 +21,13 @@ export function ReactorSocket({
   isInput,
   color = '#444',
 }: Props) {
-  const { connector } = useReactorVisual()
+  const { edgeEditor: connector } = useReactorVisual()
 
   const connectionRequest = {
     nodeId: ownerReactorId,
     socketId: id,
     socketType: isInput ? 'input' : 'output',
-  } satisfies ConnectionRequest
+  } satisfies ReactorSocket
 
   return (
     <button

@@ -1,96 +1,88 @@
 import { useCallback, useState } from 'react'
+import { filter } from '@fxts/core'
 import { produce } from 'immer'
-import type { Connection, ConnectionRequest } from './types'
+import type { ReactorEdge, ReactorSocket } from './types'
+import { compareSocket } from './utils'
 
-export function useNodeConnector() {
-  const [waiting, setWaiting] = useState<ConnectionRequest>()
+export function useEdgeEditor() {
+  const [reservedSocket, setReservedSocket] = useState<ReactorSocket>()
   const [isSource, setIsSource] = useState(true)
-  const [connections, setConnections] = useState<Connection[]>([])
+  const [edges, setEdges] = useState<ReactorEdge[]>([])
 
-  const cancel = useCallback(() => {
-    setWaiting(undefined)
+  const cancelConnection = useCallback(() => {
+    setReservedSocket(undefined)
     setIsSource(true)
   }, [])
 
-  const findConnection = useCallback(
-    (req: ConnectionRequest) =>
-      connections.find(
-        (conn) =>
-          compareConnectionRequest(conn.source, req) ||
-          compareConnectionRequest(conn.target, req),
+  const findEdge = useCallback(
+    (req: ReactorSocket) =>
+      edges.find(
+        ({ source, target }) =>
+          compareSocket(source, req) || compareSocket(target, req),
       ),
-    [connections],
+    [edges],
   )
 
   const remove = useCallback(
-    (req: ConnectionRequest) => {
-      setConnections(
-        produce((conns) =>
-          conns.filter(
-            (conn) =>
-              !compareConnectionRequest(conn.source, req) &&
-              !compareConnectionRequest(conn.target, req),
+    (req: ReactorSocket) => {
+      setEdges(
+        produce(
+          filter(
+            ({ source, target }) =>
+              !compareSocket(source, req) && !compareSocket(target, req),
           ),
         ),
       )
     },
-    [connections],
+    [edges],
   )
 
   const tryConnection = useCallback(
-    (req: ConnectionRequest) => {
-      if (waiting) {
+    (newSocket: ReactorSocket) => {
+      if (reservedSocket) {
         if (
-          waiting.nodeId !== req.nodeId &&
-          waiting.socketType !== req.socketType &&
-          !findConnection(req)
+          reservedSocket.nodeId !== newSocket.nodeId &&
+          reservedSocket.socketType !== newSocket.socketType &&
+          !findEdge(newSocket)
         ) {
           const newConnection = isSource
             ? {
-                source: waiting,
-                target: req,
+                source: reservedSocket,
+                target: newSocket,
               }
             : {
-                source: req,
-                target: waiting,
+                source: newSocket,
+                target: reservedSocket,
               }
-          setConnections([...connections, newConnection])
+          setEdges([...edges, newConnection])
         }
-        cancel()
+        cancelConnection()
       } else {
-        const conn = findConnection(req)
+        const alreadyConnectedEdge = findEdge(newSocket)
 
-        if (conn) {
-          if (compareConnectionRequest(conn.source, req)) {
-            setWaiting(conn.target)
+        if (alreadyConnectedEdge) {
+          if (compareSocket(alreadyConnectedEdge.source, newSocket)) {
+            setReservedSocket(alreadyConnectedEdge.target)
             setIsSource(false)
           } else {
-            setWaiting(conn.source)
+            setReservedSocket(alreadyConnectedEdge.source)
             setIsSource(true)
           }
-          remove(req)
+          remove(newSocket)
         } else {
-          setWaiting(req)
+          setReservedSocket(newSocket)
           setIsSource(true)
         }
       }
     },
-    [waiting, connections],
+    [reservedSocket, edges],
   )
 
   return {
-    connections,
-    cancel,
+    edges,
+    cancelConnection,
     tryConnection,
-    waiting,
+    reservedSocket,
     isSource,
   }
-}
-
-function compareConnectionRequest(a: ConnectionRequest, b: ConnectionRequest) {
-  return (
-    a.nodeId === b.nodeId &&
-    a.socketId === b.socketId &&
-    a.socketType === b.socketType
-  )
 }

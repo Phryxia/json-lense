@@ -5,13 +5,13 @@ export type Dimension = {
   h?: number
 }
 
-export type ConnectionRequest = {
+export type ReactorSocket = {
   nodeId: number
   socketType: 'input' | 'output'
   socketId: number
 }
 
-export type Connection = {
-  source: ConnectionRequest
-  target: ConnectionRequest
+export type ReactorEdge = {
+  source: ReactorSocket
+  target: ReactorSocket
 }

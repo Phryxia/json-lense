@@ -1,9 +1,9 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { DOMAttributes, PropsWithChildren } from 'react'
+import type { DOMAttributes, PropsWithChildren } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
 import { ReactorSocket } from './ReactorSocket'
-import { getReactorKey } from './utils'
+import { getReactorNodeKey } from './utils'
 
 const cx = cnx.bind(styles)
 
@@ -15,7 +15,7 @@ type Props = {
   handleMouseDown: DOMAttributes<HTMLElement>['onMouseDown']
 }
 
-export function ReactorView({
+export function ReactorNodeView({
   id,
   name,
   inputParams,
@@ -28,7 +28,7 @@ export function ReactorView({
 
   return (
     <article
-      id={getReactorKey(id)}
+      id={getReactorNodeKey(id)}
       className={cx('node')}
       style={{
         left: `${dimension.x}px`,

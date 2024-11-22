@@ -1,4 +1,4 @@
-export function checkOutside(
+export function checkOutsideMouseEvent(
   e: MouseEvent,
   predicate: HTMLElement | ((checking: HTMLElement) => boolean),
 ) {

@@ -1,12 +1,24 @@
-import type { Connection, ConnectionRequest } from './types'
+import type { ReactorEdge, ReactorSocket } from './types'
 
-export function getReactorKey(id: number) {
-  return `reactor-node-${id}`
+export function getReactorNodeKey(nodeId: number) {
+  return `reactor-node-${nodeId}`
 }
 
-export function getReactorSocketKey(req: ConnectionRequest) {
-  return `reactor-socket-${req.nodeId}-${req.socketId}-${req.socketType}`
+export function getReactorSocketKey({
+  nodeId,
+  socketType,
+  socketId,
+}: ReactorSocket) {
+  return `reactor-socket-${nodeId}-${socketId}-${socketType}`
 }
-export function getConnectionKey(connection: Connection) {
-  return `${getReactorSocketKey(connection.source)}-${getReactorSocketKey(connection.target)}`
+export function getReactorEdgeKey({ source, target }: ReactorEdge) {
+  return `${getReactorSocketKey(source)}-${getReactorSocketKey(target)}`
+}
+
+export function compareSocket(a: ReactorSocket, b: ReactorSocket) {
+  return (
+    a.nodeId === b.nodeId &&
+    a.socketId === b.socketId &&
+    a.socketType === b.socketType
+  )
 }
