@@ -27,7 +27,9 @@ describe('computeOpenStates', () => {
         [
           {
             index: 0,
-            tokens: [{ id: 0, type: JSONTokenType.Boolaen, content: 'true' }],
+            tokens: [
+              { id: 0, type: JSONTokenType.Boolaen, content: 'true', tabs: 0 },
+            ],
           },
         ],
         [],
@@ -35,7 +37,7 @@ describe('computeOpenStates', () => {
     ).toMatchObject([OpenState.Open])
   })
 
-  test('nested', () => {
+  test('every nested objects should be open', () => {
     const lines = [
       ...renderJSONAsLines([
         0, //
@@ -55,14 +57,14 @@ describe('computeOpenStates', () => {
     expect(computeOpenStates(lines, scopes)).toMatchObject([
       OpenState.BeginOpen,
       OpenState.Open,
-      OpenState.BeginClosed,
-      OpenState.Closed,
-      OpenState.Closed,
-      OpenState.Closed,
-      OpenState.BeginClosed,
-      OpenState.Closed,
-      OpenState.Closed,
-      OpenState.Closed,
+      OpenState.BeginOpen,
+      OpenState.Open,
+      OpenState.Open,
+      OpenState.Open,
+      OpenState.BeginOpen,
+      OpenState.Open,
+      OpenState.Open,
+      OpenState.Open,
       OpenState.Open,
       OpenState.Open,
     ])
