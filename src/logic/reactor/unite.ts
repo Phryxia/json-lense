@@ -1,18 +1,19 @@
 import type { SerializedReactor } from '@src/model/reactor'
 import type { Serializable } from '@src/model/serializable'
-import { createRearrangerReactor } from './rearranger'
-import { createMapperReactor } from './hyperReactor/mapper'
+import { createPickReactor } from './pick'
+import { createMapReactor } from './hyperReactor/map'
+import { ReactorName } from './consts'
 
 export function createReactor(
   serializedReactor: SerializedReactor<Serializable>,
 ) {
   switch (serializedReactor.name) {
-    case 'rearranger':
+    case ReactorName.Pick:
       // @ts-ignore
-      return createRearrangerReactor(serializedReactor)
-    case 'mapper':
+      return createPickReactor(serializedReactor)
+    case ReactorName.Map:
       // @ts-ignore
-      return createMapperReactor(serializedReactor)
+      return createMapReactor(serializedReactor)
   }
   throw new Error(`Unsupported reactor tyupe ${serializedReactor.name}`)
 }

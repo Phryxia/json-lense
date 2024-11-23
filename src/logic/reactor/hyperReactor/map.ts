@@ -2,17 +2,16 @@ import { isArrayType } from '@src/logic/molecule'
 import type { Reactor, SerializedReactor } from '@src/model/reactor'
 import { Serializable } from '@src/model/serializable'
 import { createReactor } from '../unite'
+import { ReactorName } from '../consts'
 
-export interface MapperSchema
+export interface MapSchema
   extends SerializedReactor<{ mapper: SerializedReactor<Serializable> }> {}
 
-export function createMapperReactor({
-  data: { mapper },
-}: MapperSchema): Reactor {
+export function createMapReactor({ data: { mapper } }: MapSchema): Reactor {
   const mapperReactor = createReactor(mapper)
 
   return {
-    name: 'mapper',
+    name: ReactorName.Map,
     run([molecule]) {
       if (!isArrayType(molecule)) {
         return [

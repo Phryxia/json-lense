@@ -1,11 +1,12 @@
 import { describe, test, expect } from 'vitest'
-import { createRearrangerReactor } from './rearranger'
+import { createPickReactor } from './pick'
 import { createMolecule } from '../molecule'
+import { ReactorName } from './consts'
 
-describe('rearranger', () => {
+describe(ReactorName.Pick, () => {
   test('single-path-to', () => {
-    const r1 = createRearrangerReactor({
-      name: 'rearranger',
+    const r1 = createPickReactor({
+      name: ReactorName.Pick,
       data: [
         {
           from: ['k1', 'k2'],
@@ -19,8 +20,8 @@ describe('rearranger', () => {
   })
 
   test('single-path', () => {
-    const r1 = createRearrangerReactor({
-      name: 'rearranger',
+    const r1 = createPickReactor({
+      name: ReactorName.Pick,
       data: [
         {
           from: ['k1', 'k2'],
@@ -33,8 +34,8 @@ describe('rearranger', () => {
   })
 
   test('single-to', () => {
-    const r1 = createRearrangerReactor({
-      name: 'rearranger',
+    const r1 = createPickReactor({
+      name: ReactorName.Pick,
       data: [
         {
           to: ['k1', 'k2'],
@@ -47,8 +48,8 @@ describe('rearranger', () => {
   })
 
   test('single-copy', () => {
-    const r1 = createRearrangerReactor({
-      name: 'rearranger',
+    const r1 = createPickReactor({
+      name: ReactorName.Pick,
       data: [{}],
     })
     const [o1] = r1.run([createMolecule(42)])
@@ -57,8 +58,8 @@ describe('rearranger', () => {
   })
 
   test('multi', () => {
-    const r1 = createRearrangerReactor({
-      name: 'rearranger',
+    const r1 = createPickReactor({
+      name: ReactorName.Pick,
       data: [
         {
           from: ['k1'],

@@ -3,8 +3,9 @@ import type { Serializable } from '@src/model/serializable'
 import { deepClone } from '../shared/deepClone'
 import { rget, rset } from '../shared/rget'
 import { createMolecule } from '../molecule'
+import { ReactorName } from './consts'
 
-type RearrangerMapping = Serializable & {
+type PickMappign = Serializable & {
   from?: string[] // when undefined, it's means root
   to?: (string | number)[] // when undefined, it's means root
   /**
@@ -14,13 +15,11 @@ type RearrangerMapping = Serializable & {
   fallback?: Serializable
 }
 
-export const createRearrangerReactor = (
-  schema: SerializedReactor<RearrangerMapping[]>,
-) => {
+export const createPickReactor = (schema: SerializedReactor<PickMappign[]>) => {
   const { data: schemas } = schema
 
   return {
-    name: 'rearranger',
+    name: ReactorName.Pick,
     run([molecule]) {
       let result = createMolecule(undefined)
 

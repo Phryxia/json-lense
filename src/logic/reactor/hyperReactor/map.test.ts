@@ -1,14 +1,15 @@
 import { describe, test, expect } from 'vitest'
-import { createMapperReactor } from './mapper'
+import { createMapReactor } from './map'
 import { createMolecule } from '@src/logic/molecule'
+import { ReactorName } from '../consts'
 
-describe('mapper', () => {
+describe(ReactorName.Map, () => {
   test('should map array elements using given reactor', () => {
-    const mapper = createMapperReactor({
-      name: 'mapper',
+    const mapper = createMapReactor({
+      name: ReactorName.Map,
       data: {
         mapper: {
-          name: 'rearranger',
+          name: ReactorName.Pick,
           data: [
             {
               from: ['value'],
@@ -33,11 +34,11 @@ describe('mapper', () => {
   })
 
   test('should return error for non-array input', () => {
-    const mapper = createMapperReactor({
-      name: 'mapper',
+    const mapper = createMapReactor({
+      name: ReactorName.Map,
       data: {
         mapper: {
-          name: 'rearranger',
+          name: ReactorName.Pick,
           data: [{}],
         },
       },
@@ -54,11 +55,11 @@ describe('mapper', () => {
   })
 
   test('should handle empty array input', () => {
-    const mapper = createMapperReactor({
-      name: 'mapper',
+    const mapper = createMapReactor({
+      name: ReactorName.Map,
       data: {
         mapper: {
-          name: 'rearranger',
+          name: ReactorName.Pick,
           data: [
             {
               from: ['value'],
