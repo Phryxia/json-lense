@@ -5,6 +5,7 @@ export type Dimension = {
   y: number
   w?: number
   h?: number
+  parentId?: number
 }
 
 export type ReactorSocket = {

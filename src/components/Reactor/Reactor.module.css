@@ -1,11 +1,4 @@
 .root {
-  height: 400px;
-  position: relative;
-
-  &.fold {
-    height: 200px;
-  }
-
   .ui {
     position: absolute;
     z-index: 100;
@@ -15,94 +8,104 @@
       var(--pico-block-spacing-horizontal);
   }
 
-  .edges {
-    position: absolute;
-    z-index: 10;
-    pointer-events: none;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+  .editor {
+    margin-top: var(--pico-block-spacing-vertical);
+    position: relative;
+    height: 400px;
 
-  .node {
-    position: absolute;
-    z-index: 20;
-    width: max-content;
-    padding: 0;
+    &.fold {
+      height: 200px;
+    }
 
-    header {
-      width: 100%;
-      margin: 0;
+    .edges {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
       top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
 
-    h1 {
-      font-size: 1rem;
-    }
+    .node {
+      position: absolute;
+      z-index: 20;
+      width: max-content;
+      padding: 0;
 
-    .socket {
-      display: inline-flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 2px;
-      margin: unset;
-      color: unset;
-      background-color: unset;
-
-      --socket-size: 0.7rem;
-      font-size: var(--socket-size);
-      background-color: var(--pico-form-element-active-background-color);
-      border: var(--pico-border-width) solid var(--pico-card-border-color);
-      box-shadow: var(--pico-card-box-shadow);
-
-      padding-left: 10px;
-      padding-right: 0;
-      margin-left: var(--socket-size);
-      margin-right: 0;
-      border-radius: 10px 0 0 10px;
-      border-right: none;
-
-      &:not(:last-child) {
-        margin-bottom: 0.5rem;
-      }
-
-      &.reverse {
-        flex-direction: row-reverse;
-        padding-left: 0;
-        padding-right: 10px;
-        margin-left: 0;
-        margin-right: var(--socket-size);
-        border-radius: 0 10px 10px 0;
-        border-left: none;
-      }
-
-      &:hover {
-        background-color: var(--pico-form-element-background-color);
-      }
-
-      .circle {
-        display: inline-block;
-        width: calc(0.6 * var(--socket-size));
-        height: calc(0.6 * var(--socket-size));
-        margin: auto 0.25rem;
-        background-color: #eee;
-        border-radius: 50%;
-      }
-    }
-
-    .body {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-item: flex-start;
-      padding: var(--pico-block-spacing-vertical) 0;
-
-      .sockets {
-        display: flex;
-        flex-direction: column;
-        padding: 0;
+      header {
+        width: 100%;
         margin: 0;
+        top: 0;
+      }
+
+      h1 {
+        font-size: 1rem;
+      }
+
+      .socket {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 2px;
+        margin: unset;
+        color: unset;
+        background-color: unset;
+
+        --socket-size: 0.7rem;
+        font-size: var(--socket-size);
+        background-color: var(--pico-form-element-active-background-color);
+        border: var(--pico-border-width) solid var(--pico-card-border-color);
+        box-shadow: var(--pico-card-box-shadow);
+
+        padding-left: 10px;
+        padding-right: 0;
+        margin-left: var(--socket-size);
+        margin-right: 0;
+        border-radius: 10px 0 0 10px;
+        border-right: none;
+
+        &:not(:last-child) {
+          margin-bottom: 0.5rem;
+        }
+
+        &.reverse {
+          flex-direction: row-reverse;
+          padding-left: 0;
+          padding-right: 10px;
+          margin-left: 0;
+          margin-right: var(--socket-size);
+          border-radius: 0 10px 10px 0;
+          border-left: none;
+        }
+
+        &:hover {
+          background-color: var(--pico-form-element-background-color);
+        }
+
+        .circle {
+          display: inline-block;
+          width: calc(0.6 * var(--socket-size));
+          height: calc(0.6 * var(--socket-size));
+          margin: auto 0.25rem;
+          background-color: #eee;
+          border-radius: 50%;
+        }
+      }
+
+      .body {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-item: flex-start;
+        padding: var(--pico-block-spacing-vertical) 0;
+
+        .sockets {
+          display: flex;
+          flex-direction: column;
+          padding: 0;
+          margin: 0;
+        }
       }
     }
   }

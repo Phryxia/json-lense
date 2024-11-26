@@ -1,4 +1,10 @@
-import { createContext, PropsWithChildren, useContext, useRef } from 'react'
+import {
+  createContext,
+  MutableRefObject,
+  PropsWithChildren,
+  useContext,
+  useRef,
+} from 'react'
 import { DirectedGraph } from '@src/logic/shared/graph'
 import type { ReactorEdge } from './types'
 import { useEdgeEditor } from './useEdgeEditor'
@@ -9,6 +15,7 @@ type IReactorVisualContext = {
   nodeEditor: ReturnType<typeof useNodeEditor>
   edgeEditor: ReturnType<typeof useEdgeEditor>
   mouse: ReturnType<typeof useMouse>
+  draggingNodeId: MutableRefObject<number>
 }
 
 // @ts-ignore
@@ -21,6 +28,7 @@ export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
   const nodeEditor = useNodeEditor(graph)
   const edgeEditor = useEdgeEditor(graph)
   const mouse = useMouse()
+  const draggingNodeId = useRef(-1)
 
   return (
     <ReactorVisualContext.Provider
@@ -28,6 +36,7 @@ export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
         nodeEditor,
         edgeEditor,
         mouse,
+        draggingNodeId,
       }}
     >
       {children}

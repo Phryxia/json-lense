@@ -1,6 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import type { DOMAttributes, PropsWithChildren } from 'react'
+import { MouseEvent, useCallback, type PropsWithChildren } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
 import { ReactorSocket } from './ReactorSocket'
 import { getReactorNodeKey } from './utils'
@@ -12,7 +12,6 @@ type Props = {
   name: string
   inputParams?: string[]
   outputParams?: string[]
-  handleMouseDown: DOMAttributes<HTMLElement>['onMouseDown']
 }
 
 export function ReactorNodeView({
@@ -20,11 +19,15 @@ export function ReactorNodeView({
   name,
   inputParams,
   outputParams,
-  handleMouseDown,
   children,
 }: PropsWithChildren<Props>) {
-  const { nodeEditor } = useReactorVisual()
+  const { nodeEditor, draggingNodeId } = useReactorVisual()
   const dimension = nodeEditor.nodes[id]
+
+  const handleMouseDown = useCallback((e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    draggingNodeId.current = id
+  }, [])
 
   return (
     <article
