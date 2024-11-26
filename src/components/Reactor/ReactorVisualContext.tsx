@@ -10,14 +10,12 @@ import {
 import { DirectedGraph } from '@src/logic/shared/graph'
 import type { ReactorEdge } from './types'
 import { useEdgeEditor } from './useEdgeEditor'
-import { useMouse } from './useMouse'
 import { useNodeEditor } from './useNodeEditor'
 import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
 
 type IReactorVisualContext = {
   nodeEditor: ReturnType<typeof useNodeEditor>
   edgeEditor: ReturnType<typeof useEdgeEditor>
-  mouse: ReturnType<typeof useMouse>
   draggingNodeId: MutableRefObject<number>
 }
 
@@ -29,8 +27,8 @@ export const useReactorVisual = () => useContext(ReactorVisualContext)
 export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
   const graph = useRef(new DirectedGraph<number, ReactorEdge>())
   const nodeEditor = useNodeEditor(graph)
-  const edgeEditor = useEdgeEditor(graph)
-  const mouse = useMouse()
+  const edgeEditor = useEdgeEditor(nodeEditor, graph)
+
   const draggingNodeId = useRef(-1)
 
   const handleMouseUp = useCallback(
@@ -57,7 +55,6 @@ export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
       value={{
         nodeEditor,
         edgeEditor,
-        mouse,
         draggingNodeId,
       }}
     >

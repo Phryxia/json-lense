@@ -1,10 +1,12 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { type MouseEvent as ReactMouseEvent, useCallback } from 'react'
+import { MouseEvent, useCallback } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
 import { getReactorEdgeKey } from './utils'
 import { ReactorNodeView } from './ReactorNodeView'
 import { ReactorEdgeView } from './ReactorEdgeView'
+import { HyperReactorNodeView } from './HyperReactorNodeView'
+import { useMouse } from './useMouse'
 
 const cx = cnx.bind(styles)
 
@@ -14,9 +16,10 @@ type Props = {
 }
 
 export function ReactorPlayground({ id, isRoot }: Props) {
-  const { nodeEditor, edgeEditor, mouse, draggingNodeId } = useReactorVisual()
+  const { nodeEditor, edgeEditor, draggingNodeId } = useReactorVisual()
+  const { playgroundRef, ...fallback } = useMouse()
 
-  const handleMouseMove = useCallback((e: ReactMouseEvent<HTMLElement>) => {
+  const handleMouseMove = useCallback((e: MouseEvent<HTMLElement>) => {
     if (draggingNodeId.current === -1) return
 
     const rootBound = e.currentTarget.getBoundingClientRect()
@@ -39,39 +42,55 @@ export function ReactorPlayground({ id, isRoot }: Props) {
 
   return (
     <article
-      ref={isRoot ? mouse.editorRef : undefined}
+      ref={playgroundRef}
       className={cx('editor')}
-      onMouseMove={handleMouseMove}
+      onMouseMove={isRoot ? handleMouseMove : undefined}
     >
       <svg className={cx('edges')}>
         {/* Defined edges */}
-        {edgeEditor.edges.map((edge) => (
-          <ReactorEdgeView edge={edge} key={getReactorEdgeKey(edge)} />
-        ))}
+        {edgeEditor.edges
+          .filter((edge) => edge.parentId === id)
+          .map((edge) => (
+            <ReactorEdgeView edge={edge} key={getReactorEdgeKey(edge)} />
+          ))}
 
         {/* Current working edge */}
-        {edgeEditor.reservedSocket && (
-          <ReactorEdgeView
-            edge={{
-              [edgeEditor.reservedSocket.socketType === 'input'
-                ? 'inlet'
-                : 'outlet']: edgeEditor.reservedSocket,
-            }}
-          />
-        )}
+        {edgeEditor.reservedSocket &&
+          nodeEditor.nodes[edgeEditor.reservedSocket.nodeId].parentId ===
+            id && (
+            <ReactorEdgeView
+              edge={{
+                [edgeEditor.reservedSocket.socketType === 'input'
+                  ? 'inlet'
+                  : 'outlet']: edgeEditor.reservedSocket,
+                parentId: id,
+              }}
+              fallback={fallback}
+            />
+          )}
       </svg>
 
       {nodeEditor.nodes
         .filter((node) => node.parentId === id)
-        .map((_, nodeId) => (
-          <ReactorNodeView
-            id={nodeId}
-            key={nodeId}
-            name="test"
-            inputParams={['a', 'b', 'c']}
-            outputParams={['d', 'e']}
-          />
-        ))}
+        .map(({ isHyper, nodeId }) =>
+          isHyper ? (
+            <HyperReactorNodeView
+              id={nodeId}
+              key={nodeId}
+              name="hyper"
+              inputParams={['x']}
+              outputParams={['y']}
+            />
+          ) : (
+            <ReactorNodeView
+              id={nodeId}
+              key={nodeId}
+              name="test"
+              inputParams={['a', 'b', 'c']}
+              outputParams={['d', 'e']}
+            />
+          ),
+        )}
     </article>
   )
 }

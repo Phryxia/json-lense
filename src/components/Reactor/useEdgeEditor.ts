@@ -1,9 +1,13 @@
 import { MutableRefObject, useCallback, useState } from 'react'
 import { produce } from 'immer'
 import type { ReactorEdge, ReactorGraph, ReactorSocket } from './types'
+import type { useNodeEditor } from './useNodeEditor'
 import { compareSocket } from './utils'
 
-export function useEdgeEditor(graph: MutableRefObject<ReactorGraph>) {
+export function useEdgeEditor(
+  nodeEditor: ReturnType<typeof useNodeEditor>,
+  graph: MutableRefObject<ReactorGraph>,
+) {
   const [reservedSocket, setReservedSocket] = useState<ReactorSocket>()
   const [edges, setEdges] = useState<ReactorEdge[]>([])
 
@@ -57,10 +61,15 @@ export function useEdgeEditor(graph: MutableRefObject<ReactorGraph>) {
           reservedSocket.nodeId !== newSocket.nodeId &&
           // should not connect same input / output
           reservedSocket.socketType !== newSocket.socketType &&
+          // sholud be same parent
+          nodeEditor.nodes[reservedSocket.nodeId].parentId ===
+            nodeEditor.nodes[newSocket.nodeId].parentId &&
           // no duplicated are allowed
           !findEdge(newSocket) &&
           !checkCycle(graph.current, newSocket, reservedSocket)
         ) {
+          const parentId = nodeEditor.nodes[newSocket.nodeId].parentId
+
           add(
             reservedSocket.socketType === 'input'
               ? {
@@ -68,12 +77,14 @@ export function useEdgeEditor(graph: MutableRefObject<ReactorGraph>) {
                     socketType: 'input'
                   },
                   outlet: newSocket as ReactorSocket & { socketType: 'output' },
+                  parentId,
                 }
               : {
                   inlet: newSocket as ReactorSocket & { socketType: 'input' },
                   outlet: reservedSocket as ReactorSocket & {
                     socketType: 'output'
                   },
+                  parentId,
                 },
           )
         }

@@ -1,16 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import {
-  type MouseEvent as ReactMouseEvent,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-} from 'react'
-import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
 import { ReactorVisualProvider, useReactorVisual } from './ReactorVisualContext'
-import { getReactorEdgeKey } from './utils'
-import { ReactorNodeView } from './ReactorNodeView'
-import { ReactorEdgeView } from './ReactorEdgeView'
 import { ReactorPlayground } from './ReactorPlayground'
 
 const cx = cnx.bind(styles)
@@ -37,6 +27,18 @@ function ReactorEditorContents() {
         }}
       >
         ADD
+      </button>
+
+      <button
+        onClick={() => {
+          nodeEditor.add({
+            x: 10,
+            y: 10,
+            isHyper: true,
+          })
+        }}
+      >
+        ADD HYPER
       </button>
       <ReactorPlayground isRoot />
     </article>

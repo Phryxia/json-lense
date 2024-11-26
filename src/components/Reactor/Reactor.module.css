@@ -109,4 +109,10 @@
       }
     }
   }
+
+  .hyper {
+    .editor {
+      min-width: 400px;
+    }
+  }
 }

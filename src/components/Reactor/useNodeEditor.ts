@@ -1,13 +1,13 @@
 import { MutableRefObject, useCallback } from 'react'
 import { usePool } from '@src/logic/shared/usePool'
-import type { Dimension, ReactorGraph } from './types'
+import type { ReactorNode, ReactorGraph } from './types'
 
 export function useNodeEditor(graph: MutableRefObject<ReactorGraph>) {
-  const dimensions = usePool<Dimension>()
+  const dimensions = usePool<ReactorNode>()
 
   const add = useCallback(
-    (newDimension: Dimension) => {
-      dimensions.add(newDimension)
+    (newDimension: Omit<ReactorNode, 'nodeId'>) => {
+      dimensions.add({ ...newDimension, nodeId: dimensions.count })
       graph.current.addNode(dimensions.count)
       return newDimension
     },

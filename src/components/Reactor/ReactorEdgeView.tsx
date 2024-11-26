@@ -5,27 +5,27 @@ import { getReactorNodeKey, getReactorSocketKey } from './utils'
 
 type Props = {
   edge: Partial<ReactorEdge>
+  fallback?: { x: number; y: number }
 }
 
-export function ReactorEdgeView({ edge }: Props) {
-  const { nodeEditor, mouse } = useReactorVisual()
-  const mouseFallback = { x: mouse.mouseX, y: mouse.mouseY }
+export function ReactorEdgeView({ edge, fallback }: Props) {
+  const { nodeEditor } = useReactorVisual()
   const inletPosition = edge.inlet
     ? nodeEditor.nodes[edge.inlet.nodeId]
-    : mouseFallback
+    : fallback
   const outletPosition = edge.outlet
     ? nodeEditor.nodes[edge.outlet.nodeId]
-    : mouseFallback
+    : fallback
 
   const [biasX1, biasY1] = useSocketBias(edge.inlet)
   const [biasX2, biasY2] = useSocketBias(edge.outlet)
 
   return (
     <line
-      x1={inletPosition.x + biasX1}
-      y1={inletPosition.y + biasY1}
-      x2={outletPosition.x + biasX2}
-      y2={outletPosition.y + biasY2}
+      x1={(inletPosition?.x ?? 0) + biasX1}
+      y1={(inletPosition?.y ?? 0) + biasY1}
+      x2={(outletPosition?.x ?? 0) + biasX2}
+      y2={(outletPosition?.y ?? 0) + biasY2}
       stroke="black"
     />
   )

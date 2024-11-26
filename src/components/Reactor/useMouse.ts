@@ -1,9 +1,11 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 
 export function useMouse() {
-  const editorRef = useRef<HTMLElement>(null)
-
-  const { x, y } = editorRef.current?.getBoundingClientRect() ?? { x: 0, y: 0 }
+  const playgroundRef = useRef<HTMLElement>(null)
+  const { x, y } = playgroundRef.current?.getBoundingClientRect() ?? {
+    x: 0,
+    y: 0,
+  }
 
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
@@ -19,8 +21,8 @@ export function useMouse() {
   }, [])
 
   return {
-    editorRef,
-    mouseX: mouseX - x,
-    mouseY: mouseY - y,
+    x: mouseX - x,
+    y: mouseY - y,
+    playgroundRef,
   }
 }

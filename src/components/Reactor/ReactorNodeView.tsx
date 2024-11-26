@@ -7,12 +7,12 @@ import { getReactorNodeKey } from './utils'
 
 const cx = cnx.bind(styles)
 
-type Props = {
+export type ReactorNodeViewProps = PropsWithChildren<{
   id: number
   name: string
   inputParams?: string[]
   outputParams?: string[]
-}
+}>
 
 export function ReactorNodeView({
   id,
@@ -20,7 +20,7 @@ export function ReactorNodeView({
   inputParams,
   outputParams,
   children,
-}: PropsWithChildren<Props>) {
+}: ReactorNodeViewProps) {
   const { nodeEditor, draggingNodeId } = useReactorVisual()
   const dimension = nodeEditor.nodes[id]
 

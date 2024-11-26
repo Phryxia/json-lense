@@ -1,11 +1,13 @@
 import type { DirectedGraph } from '@src/logic/shared/graph'
 
-export type Dimension = {
+export type ReactorNode = {
+  nodeId: number
   x: number
   y: number
   w?: number
   h?: number
   parentId?: number
+  isHyper?: boolean
 }
 
 export type ReactorSocket = {
@@ -17,6 +19,7 @@ export type ReactorSocket = {
 export type ReactorEdge = {
   inlet: ReactorSocket & { socketType: 'input' }
   outlet: ReactorSocket & { socketType: 'output' }
+  parentId?: number
 }
 
 export type ReactorGraph = DirectedGraph<number, ReactorEdge>
