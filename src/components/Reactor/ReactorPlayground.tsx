@@ -1,11 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import {
-  type MouseEvent as ReactMouseEvent,
-  useCallback,
-  useLayoutEffect,
-} from 'react'
-import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
+import { type MouseEvent as ReactMouseEvent, useCallback } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
 import { getReactorEdgeKey } from './utils'
 import { ReactorNodeView } from './ReactorNodeView'
@@ -20,25 +15,6 @@ type Props = {
 
 export function ReactorPlayground({ id, isRoot }: Props) {
   const { nodeEditor, edgeEditor, mouse, draggingNodeId } = useReactorVisual()
-
-  const handleMouseUp = useCallback(
-    (e: MouseEvent) => {
-      draggingNodeId.current = -1
-
-      if (
-        edgeEditor.reservedSocket &&
-        checkOutsideMouseEvent(e, (dom) => dom.id.includes('socket'))
-      ) {
-        edgeEditor.cancelConnection()
-      }
-    },
-    [edgeEditor.reservedSocket],
-  )
-
-  useLayoutEffect(() => {
-    addEventListener('mouseup', handleMouseUp)
-    return () => removeEventListener('mouseup', handleMouseUp)
-  }, [handleMouseUp])
 
   const handleMouseMove = useCallback((e: ReactMouseEvent<HTMLElement>) => {
     if (draggingNodeId.current === -1) return
