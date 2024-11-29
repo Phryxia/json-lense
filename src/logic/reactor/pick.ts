@@ -6,9 +6,9 @@ import { rset } from '../shared/rset'
 import { createMolecule } from '../molecule'
 import { ReactorName } from './consts'
 
-type PickMapping = Serializable & {
-  from?: string[] // when undefined, it's means root
-  to?: (string | number)[] // when undefined, it's means root
+export type PickMapping = Serializable & {
+  from?: (number | string)[] // when undefined, it's means root
+  to?: (number | string)[] // when undefined, it's means root
   /**
    * When there is no path in input, reactor will put this value.
    * If `fallback` is not given, error molecule will be placed.
