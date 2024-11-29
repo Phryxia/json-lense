@@ -1,11 +1,49 @@
 .root {
   font-size: 0.8rem;
 
-  .rule {
-    display: flex;
+  button {
+    width: 70px;
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0 10px;
+    margin-left: 10px;
+  }
 
-    .from {
+  .rules {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+
+    .rule {
+      position: relative;
       display: flex;
+      justify-content: stretch;
+      align-items: stretch;
+      margin: 0 0 10px 0;
+
+      .from {
+        display: flex;
+        margin: 0;
+
+        .from-text {
+          margin: 0.2rem;
+        }
+
+        input {
+          height: 1.5rem;
+          font-size: 0.7rem;
+          --pico-form-element-spacing-horizontal: 5px;
+          --pico-form-element-spacing-vertical: 2px;
+        }
+      }
+
+      .add-button {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        height: 1.5rem;
+      }
     }
   }
 }

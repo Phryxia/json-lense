@@ -1,5 +1,8 @@
+import cnx from 'classnames/bind'
+import styles from './PathInput.module.css'
 import { useLayoutEffect, useState } from 'react'
-import { createRandomDomId } from '@src/logic/shared/randomDomId'
+
+const cx = cnx.bind(styles)
 
 type Props = {
   value: (number | string)[] | undefined
@@ -8,8 +11,7 @@ type Props = {
 
 export function PathInput({ value, onChange }: Props) {
   const [text, setText] = useState('')
-  const [error, setError] = useState('error')
-  const [reasonId] = useState(createRandomDomId())
+  const [error, setError] = useState('')
 
   useLayoutEffect(() => {
     setText(renderPath(value ?? []))
@@ -30,17 +32,16 @@ export function PathInput({ value, onChange }: Props) {
   }
 
   return (
-    <>
+    <div data-tooltip={error || undefined} className={cx('root')}>
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
         onBlur={handleBlur}
+        onMouseDown={(e) => e.stopPropagation()}
         placeholder="ex) a[0].b['foo-bar'].c"
-        aria-invalid={error ? 'grammar' : undefined}
-        aria-describedby={reasonId}
+        aria-invalid={error ? true : undefined}
       />
-      <small id={reasonId}>{error}</small>
-    </>
+    </div>
   )
 }
 
@@ -50,6 +51,12 @@ function renderPath(path: (number | string)[]) {
   for (const key of path) {
     if (typeof key === 'number') {
       result += `[${key}]`
+    } else if ([...key].some((char) => !isName(char))) {
+      if (key.includes("'")) {
+        result += `["${key}"]`
+      } else {
+        result += `['${key}']`
+      }
     } else {
       result += `.${key}`
     }
@@ -98,17 +105,20 @@ function parsePath(text: string) {
       i += 1
 
       let key: string | number = ''
+      let isNumberKey = true
       if (text[i] === "'" || text[i] === '"') {
         key = parseString()
+        isNumberKey = false
       } else if (isNumber(text[i])) {
         key = parseNumber()
+        isNumberKey = true
       } else {
         throw createError(text[i], 'string or non negative integer')
       }
 
       if (text[i] === ']') {
         i += 1
-        result.push(key)
+        result.push(isNumberKey ? Number(key) : key)
       } else {
         throw createError(text[i], ']')
       }
