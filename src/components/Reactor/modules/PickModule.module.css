@@ -1,0 +1,11 @@
+.root {
+  font-size: 0.8rem;
+
+  .rule {
+    display: flex;
+
+    .from {
+      display: flex;
+    }
+  }
+}

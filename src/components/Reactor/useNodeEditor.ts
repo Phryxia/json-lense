@@ -5,14 +5,11 @@ import type { ReactorNode, ReactorGraph } from './types'
 export function useNodeEditor(graph: MutableRefObject<ReactorGraph>) {
   const dimensions = usePool<ReactorNode>()
 
-  const add = useCallback(
-    (newDimension: Omit<ReactorNode, 'nodeId'>) => {
-      dimensions.add({ ...newDimension, nodeId: dimensions.count })
-      graph.current.addNode(dimensions.count)
-      return newDimension
-    },
-    [dimensions.count],
-  )
+  const add = useCallback((newDimension: ReactorNode) => {
+    dimensions.add(newDimension)
+    graph.current.addNode(newDimension.nodeId)
+    return newDimension
+  }, [])
 
   const remove = useCallback((id: number) => {
     dimensions.remove(id)

@@ -7,6 +7,9 @@ import { ReactorNodeView } from './ReactorNodeView'
 import { ReactorEdgeView } from './ReactorEdgeView'
 import { HyperReactorNodeView } from './HyperReactorNodeView'
 import { useMouse } from './useMouse'
+import { useReactor } from './model/ReactorModelContext'
+import { getReactorSockets, ReactorModule } from './modules'
+import { ReactorName } from '@src/logic/reactor/consts'
 
 const cx = cnx.bind(styles)
 
@@ -16,6 +19,7 @@ type Props = {
 }
 
 export function ReactorPlayground({ id, isRoot }: Props) {
+  const { schemas, update } = useReactor()
   const { nodeEditor, edgeEditor, draggingNodeId } = useReactorVisual()
   const { playgroundRef, ...fallback } = useMouse()
 
@@ -80,15 +84,18 @@ export function ReactorPlayground({ id, isRoot }: Props) {
               name="hyper"
               inputParams={['x']}
               outputParams={['y']}
-            />
+            >
+              <ReactorModule reactor={schemas[nodeId]} onChange={update} />
+            </HyperReactorNodeView>
           ) : (
             <ReactorNodeView
               id={nodeId}
               key={nodeId}
-              name="test"
-              inputParams={['a', 'b', 'c']}
-              outputParams={['d', 'e']}
-            />
+              name={schemas[nodeId].name}
+              {...getReactorSockets(schemas[nodeId].name as ReactorName)}
+            >
+              <ReactorModule reactor={schemas[nodeId]} onChange={update} />
+            </ReactorNodeView>
           ),
         )}
     </article>

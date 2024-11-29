@@ -17,7 +17,7 @@ export function HyperReactorNodeView({
   return (
     <ReactorNodeView id={id} name={name} {...rest}>
       <div>
-        <button
+        {/* <button
           onClick={() => {
             nodeEditor.add({
               x: 10,
@@ -27,9 +27,9 @@ export function HyperReactorNodeView({
           }}
         >
           ADD
-        </button>
+        </button> */}
 
-        <button
+        {/* <button
           onClick={() => {
             nodeEditor.add({
               x: 10,
@@ -40,7 +40,7 @@ export function HyperReactorNodeView({
           }}
         >
           ADD HYPER
-        </button>
+        </button> */}
       </div>
       {children}
       <div className={cx('hyper')}>

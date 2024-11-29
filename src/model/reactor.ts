@@ -13,6 +13,7 @@ export interface ReactorNode {
 }
 
 export type SerializedReactor<Schema extends Serializable> = {
+  id: number
   name: string
   data: Schema
 }
