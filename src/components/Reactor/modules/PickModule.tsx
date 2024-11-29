@@ -20,6 +20,14 @@ export function PickModule({
     )
   }
 
+  function handleRemoveClick(index: number) {
+    onChange(
+      produce(reactor, (draft) => {
+        draft.data = draft.data.filter((_, oldIndex) => index !== oldIndex)
+      }),
+    )
+  }
+
   return (
     <div className={cx('root')}>
       <ul className={cx('rules')}>
@@ -64,7 +72,12 @@ export function PickModule({
                 }
               />
             </label>
-            <button className="secondary">Delete</button>
+            <button
+              className="secondary"
+              onClick={() => handleRemoveClick(index)}
+            >
+              Delete
+            </button>
           </li>
         ))}
         <li className={cx('rule')}>
@@ -78,6 +91,6 @@ export function PickModule({
 }
 
 export const PickModuleSockets: ReactorModuleSocket = {
-  inputParams: ['input'],
-  outputParams: ['output'],
+  inputParams: ['in'],
+  outputParams: ['out'],
 }
