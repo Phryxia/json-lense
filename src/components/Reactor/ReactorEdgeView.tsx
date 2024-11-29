@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useCallback, useLayoutEffect, useState } from 'react'
 import { useReactorVisual } from './ReactorVisualContext'
 import type { ReactorEdge, ReactorSocket } from './types'
 import { getReactorNodeKey, getReactorSocketKey } from './utils'
@@ -34,8 +34,10 @@ export function ReactorEdgeView({ edge, fallback }: Props) {
 function useSocketBias(socket: ReactorSocket | undefined) {
   const [biasX, setBiasX] = useState(0)
   const [biasY, setBiasY] = useState(0)
+  const [seed, setSeed] = useState(0)
+  const { addUpdateListener, removeUpdateListener } = useReactorVisual()
 
-  useLayoutEffect(() => {
+  const compute = useCallback(() => {
     if (!socket) return
 
     const nodeId = getReactorNodeKey(socket.nodeId)
@@ -60,6 +62,17 @@ function useSocketBias(socket: ReactorSocket | undefined) {
     setBiasX(sx - px + 0.5 * width)
     setBiasY(sy - py + 0.5 * height)
   }, [socket?.nodeId, socket?.socketId, socket?.socketType])
+
+  useLayoutEffect(compute, [compute, seed])
+
+  useLayoutEffect(() => {
+    if (socket?.nodeId == null) return
+
+    const cb = () => setSeed(Math.random)
+
+    addUpdateListener(socket.nodeId, cb)
+    return () => removeUpdateListener(socket.nodeId, cb)
+  }, [setSeed, socket?.nodeId])
 
   return [biasX, biasY]
 }

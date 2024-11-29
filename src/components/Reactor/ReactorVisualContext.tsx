@@ -17,6 +17,9 @@ type IReactorVisualContext = {
   nodeEditor: ReturnType<typeof useNodeEditor>
   edgeEditor: ReturnType<typeof useEdgeEditor>
   draggingNodeId: MutableRefObject<number>
+  update(nodeId: number): void
+  addUpdateListener(nodeId: number, cb: () => void): void
+  removeUpdateListener(nodeId: number, cb: () => void): void
 }
 
 // @ts-ignore
@@ -30,6 +33,7 @@ export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
   const edgeEditor = useEdgeEditor(nodeEditor, graph)
 
   const draggingNodeId = useRef(-1)
+  const rerenderListeners = useRef<(() => void)[][]>([])
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
@@ -45,6 +49,21 @@ export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
     [edgeEditor.reservedSocket],
   )
 
+  const update = useCallback((nodeId: number) => {
+    rerenderListeners.current[nodeId]?.forEach((cb) => cb())
+  }, [])
+
+  const addUpdateListener = useCallback((nodeId: number, cb: () => void) => {
+    rerenderListeners.current[nodeId] ??= []
+    rerenderListeners.current[nodeId].push(cb)
+  }, [])
+
+  const removeUpdateListener = useCallback((nodeId: number, cb: () => void) => {
+    rerenderListeners.current[nodeId] = rerenderListeners.current[
+      nodeId
+    ]?.filter((oldCb) => oldCb !== cb)
+  }, [])
+
   useLayoutEffect(() => {
     addEventListener('mouseup', handleMouseUp)
     return () => removeEventListener('mouseup', handleMouseUp)
@@ -56,6 +75,9 @@ export function ReactorVisualProvider({ children }: PropsWithChildren<{}>) {
         nodeEditor,
         edgeEditor,
         draggingNodeId,
+        update,
+        addUpdateListener,
+        removeUpdateListener,
       }}
     >
       {children}

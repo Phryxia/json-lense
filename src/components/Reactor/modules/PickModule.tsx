@@ -2,8 +2,9 @@ import cnx from 'classnames/bind'
 import styles from './PickModule.module.css'
 import { produce } from 'immer'
 import { PickMapping } from '@src/logic/reactor/pick'
-import type { ReactorModuleProps, ReactorModuleSocket } from './types'
 import { PathInput } from '../shared/PathInput'
+import { useReactorVisual } from '../ReactorVisualContext'
+import type { ReactorModuleProps, ReactorModuleSocket } from './types'
 
 const cx = cnx.bind(styles)
 
@@ -11,6 +12,8 @@ export function PickModule({
   reactor,
   onChange,
 }: ReactorModuleProps<PickMapping[]>) {
+  const { update } = useReactorVisual()
+
   function handleAddClick() {
     onChange(
       produce(reactor, (draft) => {
@@ -18,6 +21,7 @@ export function PickModule({
         draft.data.push({} satisfies PickMapping)
       }),
     )
+    update(reactor.id)
   }
 
   function handleRemoveClick(index: number) {
@@ -26,6 +30,7 @@ export function PickModule({
         draft.data = draft.data.filter((_, oldIndex) => index !== oldIndex)
       }),
     )
+    update(reactor.id)
   }
 
   return (
