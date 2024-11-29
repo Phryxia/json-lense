@@ -1,7 +1,8 @@
 import type { Reactor, SerializedReactor } from '@src/model/reactor'
 import type { Serializable } from '@src/model/serializable'
 import { deepClone } from '../shared/deepClone'
-import { rget, rset } from '../shared/rget'
+import { rget } from '../shared/rget'
+import { rset } from '../shared/rset'
 import { createMolecule } from '../molecule'
 import { ReactorName } from './consts'
 
