@@ -1,5 +1,5 @@
 import type { Molecule } from '@src/model/molecule'
-import { createMolecule, isObjectOrArrayType } from '../molecule'
+import { createMolecule, isNonPrimitiveType } from '../molecule'
 
 export function rget(
   molecule: Molecule,
@@ -52,7 +52,7 @@ function rsetRecurse(
 ): Molecule {
   const key = path[index]
 
-  if (!isObjectOrArrayType(molecule)) {
+  if (!isNonPrimitiveType(molecule)) {
     molecule.value = typeof key === 'number' ? [] : {}
     molecule.type = typeof key === 'number' ? [] : {}
     delete molecule.error

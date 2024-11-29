@@ -8,23 +8,58 @@ export type MoleculeType =
   | { [K in string]: MoleculeType }
   | MoleculeType[]
 
-export type Molecule =
-  | {
-      value:
-        | undefined
-        | null
-        | boolean
-        | string
-        | number
-        | { [K in string]: Molecule }
-        | Molecule[]
-      type: Exclude<MoleculeType, 'error'>
-      error?: false
-      reason?: undefined
-    }
-  | {
-      value?: undefined
-      type: 'error'
-      error: true
-      reason?: string
-    }
+export type Molecule = PrimitiveMolecule | NonPrimitiveMolecule | ErrorMolecule
+
+export type ErrorMolecule = {
+  value?: undefined
+  type: 'error'
+  reason?: string
+}
+
+export type NonErrorMolecule = {
+  reason?: undefined
+}
+
+export type PrimitiveMolecule =
+  | UndefinedMolecule
+  | NullMolecule
+  | BooleanMolecule
+  | StringMolecule
+  | NumberMolecule
+
+export type NonPrimitiveMolecule = ArrayMolecule | ObjectMolecule
+
+export type UndefinedMolecule = NonErrorMolecule & {
+  value: undefined
+  type: 'undefined'
+}
+
+export type NullMolecule = NonErrorMolecule & {
+  value: null
+  type: 'null'
+}
+
+export type BooleanMolecule = NonErrorMolecule & {
+  value: boolean
+  type: 'boolean'
+}
+
+export type StringMolecule = NonErrorMolecule & {
+  value: string
+  type: 'string'
+}
+
+export type NumberMolecule = NonErrorMolecule & {
+  value: number
+  type: 'number'
+}
+
+export type ArrayMolecule = NonErrorMolecule & {
+  value: Molecule[]
+  type: MoleculeType[]
+}
+
+export type ObjectMolecule = NonErrorMolecule & {
+  value: { [K in string]: Molecule }
+  type: { [K in string]: MoleculeType }
+}

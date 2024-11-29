@@ -1,4 +1,9 @@
-import type { Molecule } from '@src/model/molecule'
+import type {
+  ArrayMolecule,
+  Molecule,
+  ObjectMolecule,
+  PrimitiveMolecule,
+} from '@src/model/molecule'
 import { deepClone } from './shared/deepClone'
 
 export function createMolecule(value: any): Molecule {
@@ -68,7 +73,9 @@ function serializeMoleculeRecurse(molecule: Molecule): any {
   return molecule.value
 }
 
-export function isPrimitiveType(molecule: Molecule) {
+export function isPrimitiveType(
+  molecule: Molecule,
+): molecule is PrimitiveMolecule {
   return (
     molecule.type === 'undefined' ||
     molecule.type === 'null' ||
@@ -78,18 +85,16 @@ export function isPrimitiveType(molecule: Molecule) {
   )
 }
 
-export function isObjectType(
-  molecule: Molecule,
-): molecule is Molecule & { value: Record<string, Molecule> } {
+export function isObjectType(molecule: Molecule): molecule is ObjectMolecule {
   return typeof molecule.type === 'object' && !(molecule.type instanceof Array)
 }
 
-export function isArrayType(
-  molecule: Molecule,
-): molecule is Molecule & { value: Molecule[] } {
+export function isArrayType(molecule: Molecule): molecule is ArrayMolecule {
   return typeof molecule.type === 'object' && molecule.type instanceof Array
 }
 
-export function isObjectOrArrayType(molecule: Molecule) {
+export function isNonPrimitiveType(
+  molecule: Molecule,
+): molecule is ObjectMolecule | ArrayMolecule {
   return typeof molecule.type === 'object'
 }
