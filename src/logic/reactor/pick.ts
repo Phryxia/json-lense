@@ -5,7 +5,7 @@ import { rget, rset } from '../shared/rget'
 import { createMolecule } from '../molecule'
 import { ReactorName } from './consts'
 
-type PickMappign = Serializable & {
+type PickMapping = Serializable & {
   from?: string[] // when undefined, it's means root
   to?: (string | number)[] // when undefined, it's means root
   /**
@@ -15,7 +15,7 @@ type PickMappign = Serializable & {
   fallback?: Serializable
 }
 
-export const createPickReactor = (schema: SerializedReactor<PickMappign[]>) => {
+export const createPickReactor = (schema: SerializedReactor<PickMapping[]>) => {
   const { data: schemas } = schema
 
   return {
