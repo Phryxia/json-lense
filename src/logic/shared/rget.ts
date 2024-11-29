@@ -8,7 +8,7 @@ export function rget(
   if (!path) return molecule
 
   for (const key of path) {
-    if (molecule.error) {
+    if (molecule.type === 'error') {
       return molecule
     }
 
@@ -20,7 +20,6 @@ export function rget(
       molecule = (molecule.value as any)[key]
     } else {
       return {
-        error: true,
         type: 'error',
         reason: `Cannot reach ${path.join('.')}: property ${key} doesn't exists`,
       }
@@ -29,6 +28,13 @@ export function rget(
   return molecule
 }
 
+/**
+ * Replace value into given one at `path`.
+ * If path is nullish or empty array, just copy `value` into `molecule`,
+ * rset uses mixed mutability. It preserve untouched property as same reference.
+ * For example, when rset 2nd element in [a, b, c, d], result will be [a, b', c, d].
+ * Note that direct parent of given path will be mutated.
+ */
 export function rset(
   molecule: Molecule,
   path: (number | string)[] | undefined | null,
@@ -37,11 +43,10 @@ export function rset(
   if (!path?.length) {
     molecule.value = value.value
     molecule.type = value.type
-    molecule.error = value.error
     molecule.reason = value.reason
     return molecule
   }
-  return rsetRecurse(molecule, path ?? [], value, 0)
+  return rsetRecurse(molecule, path, value, 0)
 }
 
 function rsetRecurse(
@@ -53,9 +58,9 @@ function rsetRecurse(
   const key = path[index]
 
   if (!isNonPrimitiveType(molecule)) {
-    molecule.value = typeof key === 'number' ? [] : {}
-    molecule.type = typeof key === 'number' ? [] : {}
-    delete molecule.error
+    // change type of molecule
+    ;(molecule as Molecule).value = typeof key === 'number' ? [] : {}
+    ;(molecule as Molecule).type = typeof key === 'number' ? [] : {}
     delete molecule.reason
   }
 
@@ -69,7 +74,6 @@ function rsetRecurse(
   if (index >= path.length - 1) {
     ;(molecule.value as any)[key] = value
     ;(molecule.type as any)[key] = value.type
-    delete molecule.error
     delete molecule.reason
     return molecule
   }

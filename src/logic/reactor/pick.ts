@@ -29,7 +29,7 @@ export const createPickReactor = (schema: SerializedReactor<PickMapping[]>) => {
         rset(
           result,
           schema.to,
-          queried.error && schema.fallback
+          queried.type === 'error' && schema.fallback
             ? deepClone(createMolecule(schema.fallback))
             : deepClone(queried),
         )

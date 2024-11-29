@@ -62,19 +62,19 @@ describe('rget', () => {
   test('unreachable', () => {
     const i1 = createMolecule(0)
     expect(rget(i1, ['k1', 'k2', 'k3'])).toMatchObject<Molecule>({
-      error: true,
+      type: 'error',
       reason: "Cannot reach k1.k2.k3: property k1 doesn't exists",
     })
 
     const i2 = createMolecule({ k1: {} })
     expect(rget(i2, ['k1', 'k2', 'k3'])).toMatchObject<Molecule>({
-      error: true,
+      type: 'error',
       reason: "Cannot reach k1.k2.k3: property k2 doesn't exists",
     })
 
     const i3 = createMolecule({ k1: { k2: null } })
     expect(rget(i3, ['k1', 'k2', 'k3'])).toMatchObject<Molecule>({
-      error: true,
+      type: 'error',
       reason: "Cannot reach k1.k2.k3: property k3 doesn't exists",
     })
   })
