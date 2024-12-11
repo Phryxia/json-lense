@@ -93,6 +93,26 @@
         }
       }
 
+      .header {
+        display: flex;
+        justify-content: stretch;
+        padding: 8px 8px 8px 0.75rem;
+
+        .close-button {
+          margin-left: auto;
+          margin-right: 0;
+          padding: 0 7px;
+
+          background: #fff;
+          color: #aaa;
+          border-color: var(--pico-card-border-color);
+
+          &:hover {
+            background: #fafafa;
+          }
+        }
+      }
+
       .body {
         display: flex;
         flex-direction: row;

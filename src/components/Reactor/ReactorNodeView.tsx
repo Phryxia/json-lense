@@ -41,7 +41,10 @@ export function ReactorNodeView({
       }}
       onMouseDown={handleMouseDown}
     >
-      <header>{name}</header>
+      <header className={cx('header')}>
+        <span>{name}</span>
+        <button className={cx('close-button')}>×</button>
+      </header>
       <section className={cx('body')}>
         {inputParams && (
           <div className={cx('sockets', 'left')}>
