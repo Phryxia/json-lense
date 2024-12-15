@@ -3,7 +3,7 @@ import styles from './PickModule.module.css'
 import { produce } from 'immer'
 import { PickMapping } from '@src/logic/reactor/pick'
 import { PathInput } from '../shared/PathInput'
-import { useReactorVisual } from '../ReactorVisualContext'
+import { useReactorVisual } from '../visual/ReactorVisualContext'
 import type { ReactorModuleProps, ReactorModuleSocket } from './types'
 
 const cx = cnx.bind(styles)

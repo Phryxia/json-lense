@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useState } from 'react'
-import { useReactorVisual } from './ReactorVisualContext'
+import { useReactorVisual } from './visual/ReactorVisualContext'
 import type { ReactorEdge, ReactorSocket } from './types'
 import { getReactorNodeKey, getReactorSocketKey } from './utils'
 
@@ -9,13 +9,9 @@ type Props = {
 }
 
 export function ReactorEdgeView({ edge, fallback }: Props) {
-  const { nodeEditor } = useReactorVisual()
-  const inletPosition = edge.inlet
-    ? nodeEditor.nodes[edge.inlet.nodeId]
-    : fallback
-  const outletPosition = edge.outlet
-    ? nodeEditor.nodes[edge.outlet.nodeId]
-    : fallback
+  const { nodes } = useReactorVisual()
+  const inletPosition = edge.inlet ? nodes[edge.inlet.nodeId] : fallback
+  const outletPosition = edge.outlet ? nodes[edge.outlet.nodeId] : fallback
 
   const [biasX1, biasY1] = useSocketBias(edge.inlet)
   const [biasX2, biasY2] = useSocketBias(edge.outlet)

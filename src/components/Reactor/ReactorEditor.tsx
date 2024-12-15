@@ -1,41 +1,40 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { ReactorVisualProvider, useReactorVisual } from './ReactorVisualContext'
+import {
+  ReactorVisualProvider,
+  useReactorVisual,
+} from './visual/ReactorVisualContext'
 import { ReactorPlayground } from './ReactorPlayground'
 import { useReactor } from './model/ReactorModelContext'
 import { ReactorName } from '@src/logic/reactor/consts'
+import { useCallback } from 'react'
 
 const cx = cnx.bind(styles)
 
 export function ReactorEditor() {
+  const { add } = useReactor()
+
+  const createNode = useCallback(() => {
+    const nodeId = add({
+      name: ReactorName.Pick,
+      data: [],
+    })
+    return nodeId
+  }, [add])
+
   return (
-    <ReactorVisualProvider>
+    <ReactorVisualProvider onCreation={createNode}>
       <ReactorEditorContents />
     </ReactorVisualProvider>
   )
 }
 
 function ReactorEditorContents() {
-  const { add } = useReactor()
-  const { nodeEditor } = useReactorVisual()
+  const { createNode } = useReactorVisual()
 
   return (
     <article className={cx('root')}>
-      <button
-        onClick={() => {
-          const nodeId = add({
-            name: ReactorName.Pick,
-            data: [],
-          })
-          nodeEditor.add({
-            nodeId,
-            x: 10,
-            y: 10,
-          })
-        }}
-      >
-        ADD
-      </button>
+      <button onClick={() => createNode()}>ADD</button>
 
       {/* <button
         onClick={() => {

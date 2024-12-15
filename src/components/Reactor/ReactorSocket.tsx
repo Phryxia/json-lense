@@ -1,6 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { useReactorVisual } from './ReactorVisualContext'
+import { useReactorVisual } from './visual/ReactorVisualContext'
 import { getReactorSocketKey } from './utils'
 import type { ReactorSocket } from './types'
 
@@ -9,7 +9,7 @@ const cx = cnx.bind(styles)
 type Props = {
   id: number
   name: string
-  ownerReactorId: number
+  ownerReactorId: string
   isInput?: boolean
   color?: string
 }
@@ -21,7 +21,7 @@ export function ReactorSocket({
   isInput,
   color = '#444',
 }: Props) {
-  const { edgeEditor } = useReactorVisual()
+  const { tryConnection } = useReactorVisual()
 
   const socket = {
     nodeId: ownerReactorId,
@@ -33,7 +33,7 @@ export function ReactorSocket({
     <button
       id={getReactorSocketKey(socket)}
       className={cx('socket', { reverse: isInput })}
-      onClick={() => edgeEditor.tryConnection(socket)}
+      onClick={() => tryConnection(socket)}
     >
       <span className={cx('name')}>{name}</span>
       <div className={cx('circle')} style={{ backgroundColor: color }} />

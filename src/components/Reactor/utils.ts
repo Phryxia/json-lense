@@ -1,6 +1,6 @@
 import type { ReactorEdge, ReactorSocket } from './types'
 
-export function getReactorNodeKey(nodeId: number) {
+export function getReactorNodeKey(nodeId: string) {
   return `reactor-node-${nodeId}`
 }
 

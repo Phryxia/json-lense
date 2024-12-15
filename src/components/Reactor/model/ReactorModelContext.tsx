@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
 } from 'react'
+import { nanoid } from 'nanoid/non-secure'
 import type { ReactorNode, SerializedReactor } from '@src/model/reactor'
 import { Serializable } from '@src/model/serializable'
 import { createReactor } from '@src/logic/reactor/unite'
@@ -12,8 +13,8 @@ import { createReactor } from '@src/logic/reactor/unite'
 type IReactorModelContext = {
   reactors: ReactorNode[]
   schemas: SerializedReactor<Serializable>[]
-  add(schema: Omit<SerializedReactor<Serializable>, 'id'>): number
-  remove(id: number): void
+  add(schema: Omit<SerializedReactor<Serializable>, 'id'>): string
+  remove(id: string): void
   update(schema: SerializedReactor<Serializable>): void
 }
 
@@ -28,25 +29,26 @@ export function ReactorModelProvider({ children }: PropsWithChildren<{}>) {
 
   const add = useCallback(
     (schema: Omit<SerializedReactor<Serializable>, 'id'>) => {
+      const id = nanoid(8)
       const instancedSchema = {
         ...schema,
-        id: reactors.length,
+        id,
       }
       setReactors((reactors) => [
         ...reactors,
         {
-          id: reactors.length,
+          id,
           sources: [],
           reactor: createReactor(instancedSchema),
         },
       ])
       setSchemas((schemas) => [...schemas, instancedSchema])
-      return reactors.length
+      return id
     },
     [reactors],
   )
 
-  const remove = useCallback((id: number) => {
+  const remove = useCallback((id: string) => {
     setReactors((reactors) => reactors.filter((reactor) => reactor.id !== id))
     setSchemas((schemas) => schemas.filter((schema) => schema.id !== id))
   }, [])
@@ -56,7 +58,7 @@ export function ReactorModelProvider({ children }: PropsWithChildren<{}>) {
       reactors.map((oldReactor) =>
         newSchema.id === oldReactor.id
           ? {
-              id: reactors.length,
+              id: newSchema.id,
               sources: [],
               reactor: createReactor(newSchema),
             }

@@ -7,13 +7,13 @@ export interface Reactor {
 }
 
 export interface ReactorNode {
-  id: number
+  id: string
   sources: number[]
   reactor: Reactor
 }
 
 export type SerializedReactor<Schema extends Serializable> = {
-  id: number
+  id: string
   name: string
   data: Schema
 }

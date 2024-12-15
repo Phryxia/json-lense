@@ -2,7 +2,7 @@ import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import { ReactorNodeView, ReactorNodeViewProps } from './ReactorNodeView'
 import { ReactorPlayground } from './ReactorPlayground'
-import { useReactorVisual } from './ReactorVisualContext'
+import { useReactorVisual } from './visual/ReactorVisualContext'
 
 const cx = cnx.bind(styles)
 
@@ -12,7 +12,7 @@ export function HyperReactorNodeView({
   children,
   ...rest
 }: ReactorNodeViewProps) {
-  const { nodeEditor } = useReactorVisual()
+  const {} = useReactorVisual()
 
   return (
     <ReactorNodeView id={id} name={name} {...rest}>
