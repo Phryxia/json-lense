@@ -97,18 +97,24 @@ export function ReactorVisualProvider({ children, onCreation }: Props) {
   const tryConnection = useCallback(
     (newSocket: ReactorSocket) => {
       if (reservedSocket) {
-        const [fromSocket, toSocket] = sortHeterogeneousSocket(
+        const orderedSockets = sortHeterogeneousSocket(
           reservedSocket,
           newSocket,
         )
+
+        // should not same type
+        if (!orderedSockets) {
+          cancelConnection()
+          return
+        }
+
+        const [fromSocket, toSocket] = orderedSockets
         const from = nodes[fromSocket.nodeId]
         const to = nodes[toSocket.nodeId]
 
         if (
           // should not connect same node
           from.nodeId !== to.nodeId &&
-          // should not connect same input / output
-          reservedSocket.socketType !== newSocket.socketType &&
           // sholud be same parent
           from.parentId === to.parentId &&
           // no duplicated are allowed
@@ -225,14 +231,15 @@ function findEdgeBySocket(
 function sortHeterogeneousSocket(
   a: ReactorSocket,
   b: ReactorSocket,
-): [
-  ReactorSocket & { socketType: 'output' },
-  ReactorSocket & { socketType: 'input' },
-] {
-  if (a.socketType === b.socketType)
-    throw new Error(
-      `parameters should be different type of sockets, but given ${a.socketType}`,
-    )
+):
+  | [
+      ReactorSocket & { socketType: 'output' },
+      ReactorSocket & { socketType: 'input' },
+    ]
+  | null {
+  if (a.socketType === b.socketType) {
+    return null
+  }
 
   if (a.socketType === 'input') {
     // @ts-ignore
