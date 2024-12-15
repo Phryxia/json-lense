@@ -21,7 +21,7 @@ export function ReactorNodeView({
   outputParams,
   children,
 }: ReactorNodeViewProps) {
-  const { nodes, draggingNodeId } = useReactorVisual()
+  const { nodes, draggingNodeId, removeNode } = useReactorVisual()
   const dimension = nodes[id]
 
   const handleMouseDown = useCallback((e: MouseEvent<HTMLElement>) => {
@@ -41,7 +41,9 @@ export function ReactorNodeView({
     >
       <header className={cx('header')}>
         <span>{name}</span>
-        <button className={cx('close-button')}>×</button>
+        <button className={cx('close-button')} onClick={() => removeNode(id)}>
+          ×
+        </button>
       </header>
       <section className={cx('body')}>
         {inputParams && (
