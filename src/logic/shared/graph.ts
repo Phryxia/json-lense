@@ -1,4 +1,4 @@
-import { fx } from '@fxts/core'
+import { fx, toArray } from '@fxts/core'
 import { Queue } from './queue'
 
 export class DirectedGraph<V, E> {
@@ -45,10 +45,16 @@ export class DirectedGraph<V, E> {
     if (!this.nodes.has(from) || !this.nodes.has(to)) return
 
     const forward = this.forwardEdges.get(from)
-    forward?.set(to, [...(forward?.get(to) ?? []), label])
+
+    if (!forward) throw new Error(`Node ${from} not found from forwardEdges`)
+
+    forward.get(to)?.push(label) ?? forward.set(to, [label])
 
     const backward = this.backwardEdges.get(to)
-    backward?.set(from, [...(backward?.get(from) ?? []), label])
+
+    if (!backward) throw new Error(`Node ${to} not found from backwardEdges`)
+
+    backward.get(from)?.push(label) ?? backward.set(from, [label])
   }
 
   disconnect(from: V, to: V, label: E) {
@@ -79,6 +85,14 @@ export class DirectedGraph<V, E> {
 
   getBackwardNeighbors(node: V): Map<V, E[]> {
     return new Map(this.backwardEdges.get(node))
+  }
+
+  edges() {
+    return fx(this.forwardEdges.values())
+      .map((neighbors) => neighbors.values())
+      .map(toArray)
+      .flatMap((edges) => edges.flat())
+      .toArray() as E[]
   }
 
   get nodeCount() {
@@ -144,6 +158,10 @@ export class DirectedGraph<V, E> {
     }
 
     return visited !== this.nodes.size
+  }
+
+  findEdge(from: V, to: V, predicate: (edge: E) => boolean) {
+    return this.forwardEdges.get(from)?.get(to)?.find(predicate)
   }
 }
 
