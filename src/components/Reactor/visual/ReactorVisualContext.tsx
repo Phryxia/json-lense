@@ -117,8 +117,7 @@ export function ReactorVisualProvider({ children, onCreation }: Props) {
           from.nodeId !== to.nodeId &&
           // sholud be same parent
           from.parentId === to.parentId &&
-          // no duplicated are allowed
-          !findEdgeBySocket(graph, fromSocket) &&
+          // no input duplicated are allowed
           !findEdgeBySocket(graph, toSocket) &&
           // no cycle are allowed
           !graph.checkCycle(from.nodeId, to.nodeId)
@@ -138,16 +137,13 @@ export function ReactorVisualProvider({ children, onCreation }: Props) {
       } else {
         const alreadyConnectedEdge = findEdgeBySocket(graph, newSocket)
 
-        if (alreadyConnectedEdge) {
-          // reserve old socket and disconnect it
-          if (newSocket.socketType === 'input') {
-            setReservedSocket(alreadyConnectedEdge.outlet)
-          } else {
-            setReservedSocket(alreadyConnectedEdge.inlet)
-          }
+        if (alreadyConnectedEdge && newSocket.socketType === 'input') {
+          // reserve old socket and disconnect
+          setReservedSocket(alreadyConnectedEdge.outlet)
           dispatch({ method: 'disconnect', edge: alreadyConnectedEdge })
         } else {
           // reserve new socket
+          // note that outlet may have multiple edges
           setReservedSocket(newSocket)
         }
       }
