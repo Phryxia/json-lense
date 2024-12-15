@@ -8,11 +8,11 @@ import {
   useRef,
   useState,
 } from 'react'
-import { DirectedGraph } from '@src/logic/shared/graph'
-import type { ReactorEdge, ReactorNode, ReactorSocket } from '../types'
-import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
-import { useReactorVisualInner } from './useReactorVisualInner'
 import { fx } from '@fxts/core'
+import { DirectedGraph } from '@src/logic/shared/graph'
+import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
+import type { ReactorEdge, ReactorNode, ReactorSocket } from '../types'
+import { useReactorVisualInner } from './useReactorVisualInner'
 
 type IReactorVisualContext = {
   nodes: Record<string, ReactorNode>
@@ -118,13 +118,9 @@ export function ReactorVisualProvider({ children, onCreation }: Props) {
           // sholud be same parent
           from.parentId === to.parentId &&
           // no duplicated are allowed
-          !graph.findEdge(
-            from.nodeId,
-            to.nodeId,
-            (edge) =>
-              edge.outlet.nodeId === from.nodeId ||
-              edge.inlet.nodeId === to.nodeId,
-          ) &&
+          !findEdgeBySocket(graph, fromSocket) &&
+          !findEdgeBySocket(graph, toSocket) &&
+          // no cycle are allowed
           !graph.checkCycle(from.nodeId, to.nodeId)
         ) {
           dispatch({
