@@ -9,9 +9,10 @@ const cx = cnx.bind(styles)
 
 export type ReactorNodeViewProps = PropsWithChildren<{
   id: string
-  name: string
+  name?: string
   inputParams?: string[]
   outputParams?: string[]
+  isFixed?: boolean
 }>
 
 export function ReactorNodeView({
@@ -20,14 +21,20 @@ export function ReactorNodeView({
   inputParams,
   outputParams,
   children,
+  isFixed,
 }: ReactorNodeViewProps) {
   const { nodes, draggingNodeId, removeNode } = useReactorVisual()
   const dimension = nodes[id]
 
-  const handleMouseDown = useCallback((e: MouseEvent<HTMLElement>) => {
-    e.stopPropagation()
-    draggingNodeId.current = id
-  }, [])
+  const handleMouseDown = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      if (isFixed) return
+
+      e.stopPropagation()
+      draggingNodeId.current = id
+    },
+    [isFixed],
+  )
 
   return (
     <article
@@ -39,12 +46,14 @@ export function ReactorNodeView({
       }}
       onMouseDown={handleMouseDown}
     >
-      <header className={cx('header')}>
-        <span>{name}</span>
-        <button className={cx('close-button')} onClick={() => removeNode(id)}>
-          ×
-        </button>
-      </header>
+      {name && (
+        <header className={cx('header')}>
+          <span>{name}</span>
+          <button className={cx('close-button')} onClick={() => removeNode(id)}>
+            ×
+          </button>
+        </header>
+      )}
       <section className={cx('body')}>
         {inputParams && (
           <div className={cx('sockets', 'left')}>

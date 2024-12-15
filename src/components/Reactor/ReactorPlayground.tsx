@@ -10,6 +10,7 @@ import { HyperReactorNodeView } from './HyperReactorNodeView'
 import { useMouse } from './useMouse'
 import { useReactor } from './model/ReactorModelContext'
 import { getReactorSockets, ReactorModule } from './modules'
+import { HyperReactorInnerSocket } from './HyperReactorInnerSocket'
 
 const cx = cnx.bind(styles)
 
@@ -107,6 +108,9 @@ export function ReactorPlayground({ id, isRoot }: Props) {
             </ReactorNodeView>
           )
         })}
+
+      <HyperReactorInnerSocket nodeId={id ?? 'root'} />
+      <HyperReactorInnerSocket nodeId={id ?? 'root'} isOutput />
     </article>
   )
 }
