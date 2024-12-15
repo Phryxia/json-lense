@@ -1,6 +1,6 @@
 import { DirectedGraph } from '@src/logic/shared/graph'
 import { useSafeReducer } from '@src/logic/shared/useSafeReducer'
-import { ReactorEdge, ReactorNode } from '../types'
+import type { ReactorEdge, ReactorNode } from '../types'
 
 interface ReactorVisualState {
   nodes: Record<string, ReactorNode>

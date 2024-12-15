@@ -1,13 +1,13 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
+import { useCallback } from 'react'
+import { ReactorName } from '@src/logic/reactor/consts'
 import {
   ReactorVisualProvider,
   useReactorVisual,
-} from './visual/ReactorVisualContext'
+} from '@src/components/Reactor/visual/ReactorVisualContext'
 import { ReactorPlayground } from './ReactorPlayground'
 import { useReactor } from './model/ReactorModelContext'
-import { ReactorName } from '@src/logic/reactor/consts'
-import { useCallback } from 'react'
 
 const cx = cnx.bind(styles)
 

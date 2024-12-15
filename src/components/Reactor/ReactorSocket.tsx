@@ -1,6 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { useReactorVisual } from './visual/ReactorVisualContext'
+import { useReactorVisual } from '@src/components/Reactor/visual/ReactorVisualContext'
 import { getReactorSocketKey } from './utils'
 import type { ReactorSocket } from './types'
 

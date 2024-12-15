@@ -1,7 +1,8 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import { MouseEvent, useCallback } from 'react'
-import { useReactorVisual } from './visual/ReactorVisualContext'
+import { ReactorName } from '@src/logic/reactor/consts'
+import { useReactorVisual } from '@src/components/Reactor/visual/ReactorVisualContext'
 import { getReactorEdgeKey } from './utils'
 import { ReactorNodeView } from './ReactorNodeView'
 import { ReactorEdgeView } from './ReactorEdgeView'
@@ -9,7 +10,6 @@ import { HyperReactorNodeView } from './HyperReactorNodeView'
 import { useMouse } from './useMouse'
 import { useReactor } from './model/ReactorModelContext'
 import { getReactorSockets, ReactorModule } from './modules'
-import { ReactorName } from '@src/logic/reactor/consts'
 
 const cx = cnx.bind(styles)
 

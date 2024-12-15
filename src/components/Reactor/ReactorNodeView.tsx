@@ -1,7 +1,7 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
 import { MouseEvent, useCallback, type PropsWithChildren } from 'react'
-import { useReactorVisual } from './visual/ReactorVisualContext'
+import { useReactorVisual } from '@src/components/Reactor/visual/ReactorVisualContext'
 import { ReactorSocket } from './ReactorSocket'
 import { getReactorNodeKey } from './utils'
 
