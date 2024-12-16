@@ -8,7 +8,7 @@ interface ReactorVisualState {
   graph: DirectedGraph<string, ReactorEdge>
 }
 
-type ReactorVisualAction =
+export type ReactorVisualAction =
   | {
       method: 'createNode'
       node: ReactorNode
