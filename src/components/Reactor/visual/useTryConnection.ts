@@ -12,7 +12,7 @@ interface Params {
 }
 
 export function useTryConnection({ nodes, graph, dispatch }: Params) {
-  const { connect } = useReactor()
+  const { connect, disconnect } = useReactor()
   const [reservedSocket, setReservedSocket] = useState<ReactorSocket>()
 
   /** @inner */
@@ -26,6 +26,16 @@ export function useTryConnection({ nodes, graph, dispatch }: Params) {
       method: 'connect',
       edge,
     })
+  }
+
+  /** @inner */
+  function handleDisconnect(edge: ReactorEdge) {
+    disconnect({
+      sourceId: edge.outlet.nodeId,
+      sourceSocketId: edge.outlet.socketId,
+      targetId: edge.inlet.nodeId,
+    })
+    dispatch({ method: 'disconnect', edge })
   }
 
   const cancelConnection = useCallback(() => {
@@ -75,7 +85,7 @@ export function useTryConnection({ nodes, graph, dispatch }: Params) {
         if (alreadyConnectedEdge && newSocket.socketType === 'input') {
           // reserve old socket and disconnect
           setReservedSocket(alreadyConnectedEdge.outlet)
-          dispatch({ method: 'disconnect', edge: alreadyConnectedEdge })
+          handleDisconnect(alreadyConnectedEdge)
         } else {
           // reserve new socket
           // note that outlet may have multiple edges
