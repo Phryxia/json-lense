@@ -13,6 +13,8 @@ import { DirectedGraph } from '@src/logic/shared/graph'
 import { checkOutsideMouseEvent } from '@src/logic/shared/checkOutsideMouseEvent'
 import type { ReactorEdge, ReactorNode, ReactorSocket } from '../types'
 import { useReactorVisualInner } from './useReactorVisualInner'
+import { useReactor } from '../model/ReactorModelContext'
+import { ReactorName } from '@src/logic/reactor/consts'
 
 type IReactorVisualContext = {
   nodes: Record<string, ReactorNode>
@@ -36,11 +38,10 @@ const ReactorVisualContext = createContext<IReactorVisualContext>()
 
 export const useReactorVisual = () => useContext(ReactorVisualContext)
 
-type Props = PropsWithChildren<{
-  onCreation(): string // return id
-}>
+type Props = PropsWithChildren<{}>
 
-export function ReactorVisualProvider({ children, onCreation }: Props) {
+export function ReactorVisualProvider({ children }: Props) {
+  const { add: addNodeModel } = useReactor()
   const [{ nodes, edges, graph }, dispatch] = useReactorVisualInner()
 
   const [reservedSocket, setReservedSocket] = useState<ReactorSocket>()
@@ -49,7 +50,10 @@ export function ReactorVisualProvider({ children, onCreation }: Props) {
 
   const createNode = useCallback(
     (isHyper?: boolean, parentId?: string) => {
-      const nodeId = onCreation()
+      const nodeId = addNodeModel({
+        name: ReactorName.Pick,
+        data: [],
+      })
       const newNode = {
         nodeId,
         isHyper,
@@ -60,7 +64,7 @@ export function ReactorVisualProvider({ children, onCreation }: Props) {
       dispatch({ method: 'createNode', node: newNode })
       return newNode
     },
-    [dispatch, onCreation],
+    [dispatch, addNodeModel],
   )
 
   const removeNode = useCallback(

@@ -1,4 +1,8 @@
-import type { Reactor, SerializedReactor } from '@src/model/reactor'
+import type {
+  Reactor,
+  ReactorNodeMeta,
+  SerializedReactor,
+} from '@src/model/reactor'
 import type { Serializable } from '@src/model/serializable'
 import { deepClone } from '../shared/deepClone'
 import { rget } from '../shared/rget'
@@ -16,11 +20,17 @@ export type PickMapping = Serializable & {
   fallback?: Serializable
 }
 
+const PickReactorMeta: ReactorNodeMeta = {
+  inlets: 1,
+  outlets: 1,
+}
+
 export const createPickReactor = (schema: SerializedReactor<PickMapping[]>) => {
   const { data: schemas } = schema
 
   return {
     name: ReactorName.Pick,
+    meta: PickReactorMeta,
     run([molecule]) {
       let result = createMolecule(undefined)
 

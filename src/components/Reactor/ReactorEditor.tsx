@@ -1,29 +1,16 @@
 import cnx from 'classnames/bind'
 import styles from './Reactor.module.css'
-import { useCallback } from 'react'
-import { ReactorName } from '@src/logic/reactor/consts'
 import {
   ReactorVisualProvider,
   useReactorVisual,
 } from '@src/components/Reactor/visual/ReactorVisualContext'
 import { ReactorPlayground } from './ReactorPlayground'
-import { useReactor } from './model/ReactorModelContext'
 
 const cx = cnx.bind(styles)
 
 export function ReactorEditor() {
-  const { add } = useReactor()
-
-  const createNode = useCallback(() => {
-    const nodeId = add({
-      name: ReactorName.Pick,
-      data: [],
-    })
-    return nodeId
-  }, [add])
-
   return (
-    <ReactorVisualProvider onCreation={createNode}>
+    <ReactorVisualProvider>
       <ReactorEditorContents />
     </ReactorVisualProvider>
   )

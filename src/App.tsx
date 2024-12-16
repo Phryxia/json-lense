@@ -8,7 +8,7 @@ function App() {
   const [json, setJson] = useState<any>()
 
   return (
-    <ReactorModelProvider>
+    <ReactorModelProvider onLensesChange={() => {}}>
       <main className="container">
         <JSONLoader onLoad={setJson} />
         <ReactorEditor />
