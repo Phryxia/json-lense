@@ -30,6 +30,13 @@ export function useReactorVisualInner() {
           break
 
         case 'removeNode':
+          for (const child of Object.values(nodes)) {
+            if (child.parentId === action.nodeId) {
+              delete nextNodes[child.nodeId]
+              graph.removeNode(child.nodeId)
+            }
+          }
+
           delete nextNodes[action.nodeId]
           graph.removeNode(action.nodeId)
           break
