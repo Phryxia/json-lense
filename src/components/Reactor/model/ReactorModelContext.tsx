@@ -52,7 +52,7 @@ export function ReactorModelProvider({ children }: PropsWithChildren<Props>) {
         ...reactors,
         {
           id,
-          sourceIds: [],
+          sources: [],
           reactor: createReactor(instancedSchema),
         },
       ])
@@ -76,7 +76,7 @@ export function ReactorModelProvider({ children }: PropsWithChildren<Props>) {
         newSchema.id === oldReactor.id
           ? {
               id: newSchema.id,
-              sourceIds: oldReactor.sourceIds,
+              sources: oldReactor.sources,
               reactor: createReactor(newSchema),
             }
           : oldReactor,
@@ -95,14 +95,24 @@ export function ReactorModelProvider({ children }: PropsWithChildren<Props>) {
       reactors.map((reactor) => {
         if (
           connection.targetId !== reactor.id ||
-          reactor.sourceIds.includes(connection.sourceId)
+          reactor.sources.some(
+            ({ id, socketId }) =>
+              id === connection.sourceId &&
+              socketId === connection.sourceSocketId,
+          )
         ) {
           return reactor
         }
 
         return {
           ...reactor,
-          sourceIds: [...reactor.sourceIds, connection.sourceId],
+          sources: [
+            ...reactor.sources,
+            {
+              id: connection.sourceId,
+              socketId: connection.sourceSocketId,
+            },
+          ],
         }
       }),
     )
@@ -113,23 +123,28 @@ export function ReactorModelProvider({ children }: PropsWithChildren<Props>) {
       edges.filter(
         (edge) =>
           edge.sourceId !== connection.sourceId ||
-          edge.sourceParamIndex !== connection.sourceParamIndex ||
-          edge.targetId !== connection.targetId ||
-          edge.targetParamIndex !== connection.targetParamIndex,
+          edge.sourceSocketId !== connection.sourceSocketId ||
+          edge.targetId !== connection.targetId,
       ),
     )
     setReactors((reactors) =>
       reactors.map((reactor) => {
         if (
           reactor.id !== connection.targetId ||
-          !reactor.sourceIds.includes(connection.sourceId)
+          !reactor.sources.some(
+            ({ id, socketId }) =>
+              id === connection.sourceId &&
+              socketId === connection.sourceSocketId,
+          )
         ) {
           return reactor
         }
         return {
           ...reactor,
-          sourceIds: reactor.sourceIds.filter(
-            (id) => id !== connection.sourceId,
+          sources: reactor.sources.filter(
+            ({ id, socketId }) =>
+              id !== connection.sourceId &&
+              socketId !== connection.sourceSocketId,
           ),
         }
       }),

@@ -9,7 +9,7 @@ export interface Reactor {
 
 export interface ReactorNode {
   id: string
-  sourceIds: string[]
+  sources: { id: string; socketId: number }[]
   reactor: Reactor
 }
 
@@ -30,7 +30,6 @@ export type ReactorCreator<Schema extends Serializable> = (
 
 export interface ReactorEdge {
   sourceId: string
-  sourceParamIndex: string
+  sourceSocketId: number
   targetId: string
-  targetParamIndex: string
 }

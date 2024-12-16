@@ -33,24 +33,24 @@ function findOpOrders(
 ): string[] {
   function isEntryReactor(node: ReactorNode) {
     return (
-      node.sourceIds.length === node.reactor.meta.inlets &&
-      node.sourceIds.every((id) => id === 'root')
+      node.sources.length === node.reactor.meta.inlets &&
+      node.sources.every(({ id }) => id === 'root')
     )
   }
 
   function isActivatable(node: ReactorNode, activeNodes: Set<string>) {
-    if (node.sourceIds.length !== node.reactor.meta.inlets) {
+    if (node.sources.length !== node.reactor.meta.inlets) {
       return false
     }
 
-    return node.sourceIds.every((sourceId) => {
-      if (sourceId === 'root') return true
+    return node.sources.every(({ id }) => {
+      if (id === 'root') return true
 
-      const sourceNode = nodeMap.get(sourceId)
+      const sourceNode = nodeMap.get(id)
 
       if (!sourceNode) return false
 
-      return isEntryReactor(sourceNode) || activeNodes.has(sourceId)
+      return isEntryReactor(sourceNode) || activeNodes.has(id)
     })
   }
 
@@ -86,8 +86,8 @@ function findOpOrders(
 
     const node = nodeMap.get(nodeId)
     if (node) {
-      for (let i = node.sourceIds.length - 1; i >= 0; i--) {
-        const sourceId = node.sourceIds[i]
+      for (let i = node.sources.length - 1; i >= 0; i--) {
+        const sourceId = node.sources[i].id
         if (sourceId !== 'root' && activeNodes.has(sourceId)) {
           visit(sourceId)
         }
