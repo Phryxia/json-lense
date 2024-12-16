@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { fx } from '@fxts/core'
 import type { DirectedGraph } from '@src/logic/shared/graph'
+import { useReactor } from '../model/ReactorModelContext'
 import type { ReactorEdge, ReactorNode, ReactorSocket } from '../types'
 import type { ReactorVisualAction } from './useReactorVisualInner'
 
@@ -11,7 +12,21 @@ interface Params {
 }
 
 export function useTryConnection({ nodes, graph, dispatch }: Params) {
+  const { connect } = useReactor()
   const [reservedSocket, setReservedSocket] = useState<ReactorSocket>()
+
+  /** @inner */
+  function handleConnect(edge: ReactorEdge) {
+    connect({
+      sourceId: edge.outlet.nodeId,
+      sourceSocketId: edge.outlet.socketId,
+      targetId: edge.inlet.nodeId,
+    })
+    dispatch({
+      method: 'connect',
+      edge,
+    })
+  }
 
   const cancelConnection = useCallback(() => {
     setReservedSocket(undefined)
@@ -45,13 +60,10 @@ export function useTryConnection({ nodes, graph, dispatch }: Params) {
           // no cycle are allowed
           !graph.checkCycle(from.nodeId, to.nodeId)
         ) {
-          dispatch({
-            method: 'connect',
-            edge: {
-              outlet: fromSocket,
-              inlet: toSocket,
-              parentId: from.parentId,
-            },
+          handleConnect({
+            outlet: fromSocket,
+            inlet: toSocket,
+            parentId: from.parentId,
           })
         }
 
