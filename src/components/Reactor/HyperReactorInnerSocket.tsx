@@ -11,7 +11,7 @@ export function HyperReactorInnerSocket({ nodeId, isOutput }: Props) {
     <ReactorNodeView
       id={getHyperReactorInnerSocketKey({
         nodeId,
-        socketType: isOutput ? 'output' : 'input',
+        socketType: isOutput ? 'input' : 'output',
       })}
       inputParams={isOutput ? ['output'] : undefined}
       outputParams={isOutput ? undefined : ['input']}

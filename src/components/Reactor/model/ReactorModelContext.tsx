@@ -15,7 +15,7 @@ import type {
 import type { Serializable } from '@src/model/serializable'
 import type { JSONLense } from './types'
 import { createReactor } from '@src/logic/reactor/unite'
-import { getHyperReactorInnerSocketKey } from '../utils'
+import { ROOT_OUTPUT_INNER_SOCKET_ID } from '../consts'
 import { createLenses } from './logic'
 
 type IReactorModelContext = {
@@ -125,13 +125,7 @@ export function ReactorModelProvider({ children }: PropsWithChildren<Props>) {
     // Therefore, it should be handled separately.
     // Note that input node doesn't required to be handle
     // since every lenses get input explictly.
-    if (
-      connection.targetId ===
-      getHyperReactorInnerSocketKey({
-        nodeId: 'root',
-        socketType: 'input',
-      })
-    ) {
+    if (connection.targetId === ROOT_OUTPUT_INNER_SOCKET_ID) {
       setFinalOutputNodeId(connection.sourceId)
     }
   }, [])
@@ -168,13 +162,7 @@ export function ReactorModelProvider({ children }: PropsWithChildren<Props>) {
       }),
     )
 
-    if (
-      connection.targetId ===
-      getHyperReactorInnerSocketKey({
-        nodeId: 'root',
-        socketType: 'input',
-      })
-    ) {
+    if (connection.targetId === ROOT_OUTPUT_INNER_SOCKET_ID) {
       setFinalOutputNodeId('')
     }
   }, [])

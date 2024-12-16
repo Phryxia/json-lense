@@ -77,7 +77,10 @@ export function ReactorPlayground({ id, isRoot }: Props) {
       </svg>
 
       {Object.values(nodes)
-        .filter((node) => node.parentId === id)
+        .filter(
+          (node) =>
+            node.parentId === id && !node.nodeId.includes('inner-socket'),
+        )
         .map(({ isHyper, nodeId }) => {
           const schema = schemas.find((schema) => schema.id === nodeId)
 

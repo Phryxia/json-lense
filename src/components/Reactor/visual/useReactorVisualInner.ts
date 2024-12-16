@@ -1,7 +1,11 @@
 import { DirectedGraph } from '@src/logic/shared/graph'
 import { useSafeReducer } from '@src/logic/shared/useSafeReducer'
 import type { ReactorEdge, ReactorNode } from '../types'
-import { createInitialGraph, getHyperReactorInnerSocketKey } from '../utils'
+import { createInitialGraph } from '../utils'
+import {
+  ROOT_INPUT_INNER_SOCKET_ID,
+  ROOT_OUTPUT_INNER_SOCKET_ID,
+} from '../consts'
 
 interface ReactorVisualState {
   nodes: Record<string, ReactorNode>
@@ -78,23 +82,14 @@ export function useReactorVisualInner() {
 }
 
 function createInitialNodes(): Record<string, ReactorNode> {
-  const inputId = getHyperReactorInnerSocketKey({
-    nodeId: 'root',
-    socketType: 'input',
-  })
-  const outputId = getHyperReactorInnerSocketKey({
-    nodeId: 'root',
-    socketType: 'output',
-  })
-
   return {
-    [inputId]: {
-      nodeId: inputId,
+    [ROOT_INPUT_INNER_SOCKET_ID]: {
+      nodeId: ROOT_INPUT_INNER_SOCKET_ID,
       x: 20,
       y: 150,
     },
-    [outputId]: {
-      nodeId: outputId,
+    [ROOT_OUTPUT_INNER_SOCKET_ID]: {
+      nodeId: ROOT_OUTPUT_INNER_SOCKET_ID,
       x: 800,
       y: 150,
     },
