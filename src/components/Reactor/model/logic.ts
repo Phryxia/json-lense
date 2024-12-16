@@ -1,5 +1,6 @@
 import type { ReactorNode } from '@src/model/reactor'
 import type { JSONLense } from './types'
+import { ROOT_INPUT_INNER_SOCKET_ID } from '../consts'
 
 export function createLenses(reactors: ReactorNode[]) {
   const lenses: JSONLense[] = []
@@ -31,75 +32,49 @@ function findOpOrders(
   reactors: ReactorNode[],
   nodeMap: Map<string, ReactorNode>,
 ): string[] {
-  function isEntryReactor(node: ReactorNode) {
-    return (
-      node.sources.length === node.reactor.meta.inlets &&
-      node.sources.every(({ id }) => id === 'root')
-    )
-  }
-
-  function isActivatable(node: ReactorNode, activeNodes: Set<string>) {
-    if (node.sources.length !== node.reactor.meta.inlets) {
-      return false
-    }
-
-    return node.sources.every(({ id }) => {
-      if (id === 'root') return true
-
-      const sourceNode = nodeMap.get(id)
-
-      if (!sourceNode) return false
-
-      return isEntryReactor(sourceNode) || activeNodes.has(id)
-    })
-  }
-
-  // Find active nodes
-  const activeNodes = new Set<string>()
-
-  // First pass: find entry reactors
-  reactors.forEach((node) => {
-    if (isEntryReactor(node)) activeNodes.add(node.id)
-  })
-
-  // Second pass: find all activatable nodes
-  let changed = true
-  while (changed) {
-    changed = false
-
-    for (const node of reactors) {
-      if (!activeNodes.has(node.id) && isActivatable(node, activeNodes)) {
-        activeNodes.add(node.id)
-        changed = true
-      }
-    }
-  }
-
   const visited = new Set<string>()
   const visiting = new Set<string>()
+  const isActive: Record<string, boolean> = {}
   const postOrder: string[] = []
 
-  function visit(nodeId: string) {
-    if (visited.has(nodeId) || visiting.has(nodeId)) return
+  function visit(nodeId: string): boolean {
+    if (nodeId === ROOT_INPUT_INNER_SOCKET_ID) return true
+
+    if (visited.has(nodeId)) return isActive[nodeId]
+
+    if (visiting.has(nodeId)) {
+      throw new Error('Cyclic dependency detected')
+    }
 
     visiting.add(nodeId)
 
     const node = nodeMap.get(nodeId)
-    if (node) {
-      for (let i = node.sources.length - 1; i >= 0; i--) {
-        const sourceId = node.sources[i].id
-        if (sourceId !== 'root' && activeNodes.has(sourceId)) {
-          visit(sourceId)
-        }
-      }
+
+    if (!node) throw new Error(`Cannot find node ${nodeId}`)
+
+    const isSourcesActive = node.sources.every(({ id: sourceId }) =>
+      visit(sourceId),
+    )
+
+    isActive[nodeId] = isSourcesActive && isAllSourceConnected(node)
+
+    if (isActive[nodeId]) {
+      postOrder.push(nodeId)
     }
 
     visiting.delete(nodeId)
     visited.add(nodeId)
-    postOrder.push(nodeId)
+    return isActive[nodeId]
   }
 
-  activeNodes.forEach(visit)
+  reactors.forEach(({ id }) => visit(id))
 
   return postOrder
+}
+
+function isAllSourceConnected(node: ReactorNode) {
+  return (
+    node.sources.reduce((acc, entry) => acc + (entry ? 1 : 0), 0) ===
+    node.reactor.meta.inlets
+  )
 }
