@@ -41,7 +41,7 @@ export const useReactorVisual = () => useContext(ReactorVisualContext)
 type Props = PropsWithChildren<{}>
 
 export function ReactorVisualProvider({ children }: Props) {
-  const { add: addNodeModel } = useReactor()
+  const { add: addNodeModel, remove: removeNodeModel } = useReactor()
   const [{ nodes, edges, graph }, dispatch] = useReactorVisualInner()
 
   const [reservedSocket, setReservedSocket] = useState<ReactorSocket>()
@@ -69,6 +69,7 @@ export function ReactorVisualProvider({ children }: Props) {
 
   const removeNode = useCallback(
     (nodeId: string) => {
+      removeNodeModel(nodeId)
       dispatch({ method: 'removeNode', nodeId })
     },
     [dispatch],
