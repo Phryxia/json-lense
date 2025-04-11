@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { createMolecule, serializeMolecule } from '@src/logic/molecule'
 import { JSONInspector } from '../JSONInspector'
 
 interface Props {
@@ -10,8 +9,7 @@ export function JSONExplorer({ json }: Props) {
   const output = useMemo(() => {
     if (!json) return undefined
 
-    const output = createMolecule(json)
-    return JSON.parse(serializeMolecule(output)).root
+    return json
   }, [json])
 
   return (
