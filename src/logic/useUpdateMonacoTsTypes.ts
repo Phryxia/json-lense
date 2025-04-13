@@ -1,29 +1,26 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect } from 'react'
 import * as monaco from 'monaco-editor'
 import { renderTsType, type RenderedType } from './tsType/render'
 import { extractTsType } from './tsType/extract'
 
 export function useUpdateMonacoTsTypes(json: any) {
-  const [renderedTypes, setRenderedTypes] = useState<RenderedType[]>([])
-
   useLayoutEffect(() => {
     if (json === undefined) {
-      setRenderedTypes([])
+      monaco.languages.typescript.typescriptDefaults.setExtraLibs([
+        {
+          content: 'type Type = undefined',
+        },
+      ])
       return
     }
 
-    const results: RenderedType[] = []
-    renderTsType(extractTsType(json), results)
-    setRenderedTypes(results)
-  }, [json])
-
-  useLayoutEffect(() => {
-    const joinedTypes = renderedTypes.map(({ ts }) => ts).join('\n')
+    const renderedTypes: RenderedType[] = []
+    renderTsType(extractTsType(json), renderedTypes)
 
     monaco.languages.typescript.typescriptDefaults.setExtraLibs([
       {
-        content: joinedTypes,
+        content: renderedTypes.map(({ ts }) => ts).join('\n'),
       },
     ])
-  }, [renderedTypes])
+  }, [json])
 }

@@ -5,6 +5,11 @@ import classNames from 'classnames/bind'
 
 const cx = classNames.bind(styles)
 
+const DEFAULT_CODE = `// Do not remove \`Type\` keyword!!!
+function transform(data: Type) {
+  return data
+}`
+
 export function ReactorEditor() {
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null)
@@ -16,9 +21,7 @@ export function ReactorEditor() {
         if (editor) return editor
 
         return monaco.editor.create(monacoDOM.current!, {
-          value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join(
-            '\n',
-          ),
+          value: DEFAULT_CODE,
           language: 'typescript',
         })
       })
