@@ -7,6 +7,7 @@ import { useUpdateMonacoTsTypes } from './logic/useUpdateMonacoTsTypes'
 
 function App() {
   const [json, setJson] = useState<any>()
+  const [processedJson, setProcessedJson] = useState<any>()
 
   useUpdateMonacoTsTypes(json)
 
@@ -14,8 +15,8 @@ function App() {
     <main className="container">
       <JSONLoader onLoad={setJson} />
       {json && <JSONInspector json={json} height={400} />}
-      <ReactorEditor />
-      {json && <JSONExplorer json={json} />}
+      <ReactorEditor json={json} onSuccess={setProcessedJson} />
+      {processedJson && <JSONExplorer json={{ global: processedJson }} />}
     </main>
   )
 }
