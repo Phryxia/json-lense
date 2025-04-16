@@ -21,7 +21,9 @@ export function extractTsType(value: any): TsType {
     return Object.fromEntries(
       Object.entries(value).map(([key, childValue]) => [
         key,
-        extractTsType(childValue),
+        {
+          type: extractTsType(childValue),
+        },
       ]),
     )
   }

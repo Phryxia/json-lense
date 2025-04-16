@@ -7,6 +7,13 @@ export type PrimitiveType =
 
 export type ArrayTsType = TsType[]
 
-export type ObjectTsType = { [key: string]: TsType }
-
 export type TsType = PrimitiveType | ArrayTsType | ObjectTsType
+
+export type ObjectTsType = {
+  [key: string]: ObjectProperty
+}
+
+export interface ObjectProperty {
+  isOptional?: boolean
+  type: TsType
+}
