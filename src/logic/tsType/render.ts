@@ -30,11 +30,17 @@ export function renderTsType(
     return result
   }
 
+  const optionalities = Object.values(tsType).map(
+    ({ isOptional }) => isOptional,
+  )
   const childrenTypes = Object.entries(tsType).map(([key, childType]) =>
-    renderTsType(childType, results, [...path, key]),
+    renderTsType(childType.type, results, [...path, key]),
   )
   const ts = `${prefix}{ ${Object.keys(tsType)
-    .map((key, index) => `${key}: ${childrenTypes[index].typeName};`)
+    .map(
+      (key, index) =>
+        `${key}${optionalities[index] ? '?' : ''}: ${childrenTypes[index].typeName};`,
+    )
     .join(' ')} }`
   const result = { typeName, ts }
   results.push(result)

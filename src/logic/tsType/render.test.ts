@@ -117,5 +117,25 @@ describe('tsType/render', () => {
         { typeName: 'Type', ts: 'type Type = { a: Type_a; b: Type_b; }' },
       ])
     })
+
+    it('should add optional properties', () => {
+      const results: RenderedType[] = []
+      renderTsType(
+        {
+          a: { type: 'number', isOptional: true },
+          b: { type: 'number', isOptional: false },
+        },
+        results,
+      )
+
+      expect(results).toMatchObject([
+        { typeName: 'Type_a', ts: 'type Type_a = number' },
+        { typeName: 'Type_b', ts: 'type Type_b = number' },
+        {
+          typeName: 'Type',
+          ts: 'type Type = { a?: Type_a; b: Type_b; }',
+        },
+      ])
+    })
   })
 })
