@@ -80,7 +80,11 @@ function createJsProcessor(model: monaco.editor.ITextModel | null | undefined) {
   try {
     self.postMessage({
       type: '${JsWorkerMessageType.TransformResult}',
-      result: transform(JSON.parse('${JSON.stringify(targetValue).replaceAll("'", "\\'")}'))
+      result: transform(${
+        typeof targetValue === 'object'
+          ? `JSON.parse('${JSON.stringify(targetValue).replaceAll("'", "\\'")}')`
+          : renderPrimitiveValue(targetValue)
+      })
     })
   } catch (error) {
     self.postMessage({
@@ -90,4 +94,24 @@ function createJsProcessor(model: monaco.editor.ITextModel | null | undefined) {
   }`
     return js
   }, 1000)
+}
+
+function renderPrimitiveValue(value: any) {
+  if (value === null) {
+    return 'null'
+  }
+
+  if (value === undefined) {
+    return 'undefined'
+  }
+
+  if (typeof value === 'string') {
+    return `'${value.replaceAll("'", "\\'")}'`
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return value.toString()
+  }
+
+  throw new Error(`Unsupported type: ${typeof value}`)
 }

@@ -7,8 +7,8 @@ import { useProessJson } from './useProcessJson'
 
 const cx = classNames.bind(styles)
 
-const DEFAULT_CODE = `// Do not remove \`Type\` keyword!!!
-function transform(data: Type) {
+const DEFAULT_CODE = `// Do not change or remove this signature!
+const transform: ValidReactor = (data: Type) => {
   return data
 }`
 
