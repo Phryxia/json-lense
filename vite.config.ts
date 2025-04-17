@@ -10,4 +10,8 @@ export default defineConfig({
   },
   plugins: [react()],
   base: '/json-lense/',
+  build: {
+    outDir: 'docs',
+    emptyOutDir: true,
+  },
 })
