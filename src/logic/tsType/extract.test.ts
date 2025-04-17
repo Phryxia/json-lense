@@ -21,12 +21,12 @@ describe('tsType/extract', () => {
 
   it('should extract object type', () => {
     expect(extractTsType({ a: 1, b: 's', c: null })).toMatchObject({
-      a: { type: 'number' },
-      b: { type: 'string' },
-      c: { type: 'null' },
+      a: { meta: 'object', type: 'number' },
+      b: { meta: 'object', type: 'string' },
+      c: { meta: 'object', type: 'null' },
     })
     expect(extractTsType({ a: { b: 1 } })).toMatchObject({
-      a: { type: { b: { type: 'number' } } },
+      a: { meta: 'object', type: { b: { meta: 'object', type: 'number' } } },
     })
   })
 })

@@ -22,6 +22,7 @@ export function extractTsType(value: any): TsType {
       Object.entries(value).map(([key, childValue]) => [
         key,
         {
+          meta: 'object',
           type: extractTsType(childValue),
         },
       ]),
