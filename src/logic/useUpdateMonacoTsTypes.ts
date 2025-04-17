@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react'
 import * as monaco from 'monaco-editor'
-import { renderTsType, type RenderedType } from './tsType/render'
+import { renderTsType } from './tsType/render'
 import { extractTsType } from './tsType/extract'
 
 const ROOT_FUNCTION_TYPE = `
@@ -18,13 +18,9 @@ export function useUpdateMonacoTsTypes(json: any) {
       return
     }
 
-    const renderedTypes: RenderedType[] = []
-    renderTsType(extractTsType(json), renderedTypes)
-
     monaco.languages.typescript.typescriptDefaults.setExtraLibs([
       {
-        content:
-          renderedTypes.map(({ ts }) => ts).join('\n') + ROOT_FUNCTION_TYPE,
+        content: renderTsType(extractTsType(json)) + ROOT_FUNCTION_TYPE,
       },
     ])
   }, [json])

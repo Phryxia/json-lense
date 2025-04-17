@@ -1,48 +1,47 @@
-import { TsType } from '@src/model/tsType'
-import { isArrayTsType, isPrimitiveType } from './shared'
+import { fx } from '@fxts/core'
+import type { TsType } from '@src/model/tsType'
+import {
+  isArrayTsType,
+  isObjectTsType,
+  isPrimitiveType,
+  isUnionTsType,
+} from './shared'
 
-export interface RenderedType {
-  typeName: string
-  ts: string
+export function renderTsType(tsType: TsType) {
+  return `type Type = ${renderTsTypeRecurse(tsType)}`
 }
 
-export function renderTsType(
-  tsType: TsType,
-  results: RenderedType[],
-  path: string[] = [],
-): RenderedType {
-  const typeName = `Type${path.length ? `_${path.join('_')}` : ''}`
-  const prefix = `type ${typeName} = `
-
+function renderTsTypeRecurse(tsType: TsType): string {
   if (isPrimitiveType(tsType)) {
-    const result = { typeName, ts: `${prefix}${tsType}` }
-    results.push(result)
-    return result
+    return tsType as string
   }
 
   if (isArrayTsType(tsType)) {
-    const childrenTypes = tsType.map((childType, index) =>
-      renderTsType(childType, results, [...path, index.toString()]),
+    const childrenTypes = tsType.map((childType) =>
+      renderTsTypeRecurse(childType),
     )
-    const ts = `${prefix}[${childrenTypes.map(({ typeName }) => typeName).join(', ')}]`
-    const result = { typeName, ts }
-    results.push(result)
-    return result
+    return `[${childrenTypes.join(', ')}]`
   }
 
-  const optionalities = Object.values(tsType).map(
-    ({ isOptional }) => isOptional,
-  )
-  const childrenTypes = Object.entries(tsType).map(([key, childType]) =>
-    renderTsType(childType.type, results, [...path, key]),
-  )
-  const ts = `${prefix}{ ${Object.keys(tsType)
-    .map(
-      (key, index) =>
-        `${key}${optionalities[index] ? '?' : ''}: ${childrenTypes[index].typeName};`,
+  if (isObjectTsType(tsType)) {
+    const optionalities = Object.values(tsType).map(
+      ({ isOptional }) => isOptional,
     )
-    .join(' ')} }`
-  const result = { typeName, ts }
-  results.push(result)
-  return result
+    const childrenTypes = Object.values(tsType).map((childType) =>
+      renderTsTypeRecurse(childType.type),
+    )
+    return `{ ${Object.keys(tsType)
+      .map(
+        (key, index) =>
+          `${key}${optionalities[index] ? '?' : ''}: ${childrenTypes[index]};`,
+      )
+      .join(' ')} }`
+  }
+
+  if (isUnionTsType(tsType)) {
+    const childrenTypes = new Set(tsType.types.map(renderTsTypeRecurse))
+    return `${fx(childrenTypes.values()).join(' | ')}`
+  }
+
+  throw new Error(`Unsupported type: ${JSON.stringify(tsType)}`)
 }

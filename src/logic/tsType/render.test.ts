@@ -1,141 +1,77 @@
 import { describe, it, expect, test } from 'vitest'
-import { RenderedType, renderTsType } from './render'
+import { renderTsType } from './render'
 import { extractTsType } from './extract'
 
 describe('tsType/render', () => {
   it('should render primitive type as is', () => {
-    expect(renderTsType(extractTsType(true), [])).toMatchObject({
-      typeName: 'Type',
-      ts: 'type Type = boolean',
-    })
-    expect(renderTsType(extractTsType(0), [])).toMatchObject({
-      typeName: 'Type',
-      ts: 'type Type = number',
-    })
-    expect(renderTsType(extractTsType(''), [])).toMatchObject({
-      typeName: 'Type',
-      ts: 'type Type = string',
-    })
-    expect(renderTsType(extractTsType(null), [])).toMatchObject({
-      typeName: 'Type',
-      ts: 'type Type = null',
-    })
-    expect(renderTsType(extractTsType(undefined), [])).toMatchObject({
-      typeName: 'Type',
-      ts: 'type Type = undefined',
-    })
+    expect(renderTsType(extractTsType(true))).toBe('type Type = boolean')
+    expect(renderTsType(extractTsType(0))).toBe('type Type = number')
+    expect(renderTsType(extractTsType(''))).toBe('type Type = string')
+    expect(renderTsType(extractTsType(null))).toBe('type Type = null')
+    expect(renderTsType(extractTsType(undefined))).toBe('type Type = undefined')
   })
 
   describe('should properly render array type', () => {
     test('empty', () => {
-      expect(renderTsType(extractTsType([]), [])).toMatchObject({
-        typeName: 'Type',
-        ts: 'type Type = []',
-      })
+      expect(renderTsType(extractTsType([]))).toBe('type Type = []')
     })
 
-    it('should add sub indices for each elements in array', () => {
-      expect(renderTsType(extractTsType([0, 1, 2]), [])).toMatchObject({
-        typeName: 'Type',
-        ts: 'type Type = [Type_0, Type_1, Type_2]',
-      })
-    })
-
-    it('should add sub types first', () => {
-      const results: RenderedType[] = []
-      renderTsType(extractTsType([0, 1, 2]), results)
-
-      expect(results).toMatchObject([
-        { typeName: 'Type_0', ts: 'type Type_0 = number' },
-        { typeName: 'Type_1', ts: 'type Type_1 = number' },
-        { typeName: 'Type_2', ts: 'type Type_2 = number' },
-        { typeName: 'Type', ts: 'type Type = [Type_0, Type_1, Type_2]' },
-      ])
+    it('should add subtypes for each element in array', () => {
+      expect(renderTsType(extractTsType([0, 1, 2]))).toBe(
+        'type Type = [number, number, number]',
+      )
     })
 
     it('should add nested sub indices properly', () => {
-      const results: RenderedType[] = []
-      renderTsType(extractTsType([0, [1, 2]]), results)
-
-      expect(results).toMatchObject([
-        { typeName: 'Type_0', ts: 'type Type_0 = number' },
-        { typeName: 'Type_1_0', ts: 'type Type_1_0 = number' },
-        { typeName: 'Type_1_1', ts: 'type Type_1_1 = number' },
-        { typeName: 'Type_1', ts: 'type Type_1 = [Type_1_0, Type_1_1]' },
-        { typeName: 'Type', ts: 'type Type = [Type_0, Type_1]' },
-      ])
+      expect(renderTsType(extractTsType([0, [1, 2]]))).toBe(
+        'type Type = [number, [number, number]]',
+      )
     })
   })
 
   describe('should properly render object type', () => {
     test('empty', () => {
-      expect(renderTsType(extractTsType({}), [])).toMatchObject({
-        typeName: 'Type',
-        ts: 'type Type = {  }',
-      })
+      expect(renderTsType(extractTsType({}))).toBe('type Type = {  }')
     })
 
     describe('should add path of properties', () => {
       test('single', () => {
-        expect(renderTsType(extractTsType({ a: 0 }), [])).toMatchObject({
-          typeName: 'Type',
-          ts: 'type Type = { a: Type_a; }',
-        })
+        expect(renderTsType(extractTsType({ a: 0 }))).toBe(
+          'type Type = { a: number; }',
+        )
       })
 
       test('multiple', () => {
-        expect(renderTsType(extractTsType({ a: 0, b: 1 }), [])).toMatchObject({
-          typeName: 'Type',
-          ts: 'type Type = { a: Type_a; b: Type_b; }',
-        })
+        expect(renderTsType(extractTsType({ a: 0, b: 1 }))).toBe(
+          'type Type = { a: number; b: number; }',
+        )
       })
     })
 
-    it('should add sub types first', () => {
-      const results: RenderedType[] = []
-      renderTsType(extractTsType({ a: 0, b: 1 }), results)
-
-      expect(results).toMatchObject([
-        { typeName: 'Type_a', ts: 'type Type_a = number' },
-        { typeName: 'Type_b', ts: 'type Type_b = number' },
-        { typeName: 'Type', ts: 'type Type = { a: Type_a; b: Type_b; }' },
-      ])
-    })
-
     it('should add nested sub indices properly', () => {
-      const results: RenderedType[] = []
-      renderTsType(extractTsType({ a: 0, b: { c: 1, d: 2 } }), results)
-
-      expect(results).toMatchObject([
-        { typeName: 'Type_a', ts: 'type Type_a = number' },
-        { typeName: 'Type_b_c', ts: 'type Type_b_c = number' },
-        { typeName: 'Type_b_d', ts: 'type Type_b_d = number' },
-        {
-          typeName: 'Type_b',
-          ts: 'type Type_b = { c: Type_b_c; d: Type_b_d; }',
-        },
-        { typeName: 'Type', ts: 'type Type = { a: Type_a; b: Type_b; }' },
-      ])
+      expect(renderTsType(extractTsType({ a: 0, b: { c: 1, d: 2 } }))).toBe(
+        'type Type = { a: number; b: { c: number; d: number; }; }',
+      )
     })
 
     it('should add optional properties', () => {
-      const results: RenderedType[] = []
-      renderTsType(
-        {
-          a: { type: 'number', isOptional: true },
-          b: { type: 'number', isOptional: false },
-        },
-        results,
-      )
+      expect(
+        renderTsType({
+          a: { meta: 'object', type: 'number', isOptional: true },
+          b: { meta: 'object', type: 'number', isOptional: false },
+        }),
+      ).toBe('type Type = { a?: number; b: number; }')
+    })
+  })
 
-      expect(results).toMatchObject([
-        { typeName: 'Type_a', ts: 'type Type_a = number' },
-        { typeName: 'Type_b', ts: 'type Type_b = number' },
-        {
-          typeName: 'Type',
-          ts: 'type Type = { a?: Type_a; b: Type_b; }',
-        },
-      ])
+  describe('should properly render union type', () => {
+    it('should add sub types first and remove duplicated one', () => {
+      expect(
+        renderTsType({
+          meta: 'union',
+          types: ['number', 'number', 'string', 'null', 'undefined'],
+        }),
+      ).toBe('type Type = number | string | null | undefined')
     })
   })
 })
