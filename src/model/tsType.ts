@@ -7,13 +7,19 @@ export type PrimitiveType =
 
 export type ArrayTsType = TsType[]
 
-export type TsType = PrimitiveType | ArrayTsType | ObjectTsType
+export type TsType = PrimitiveType | ArrayTsType | ObjectTsType | UnionTsType
 
 export type ObjectTsType = {
   [key: string]: ObjectProperty
 }
 
 export interface ObjectProperty {
+  meta: 'object'
   isOptional?: boolean
   type: TsType
+}
+
+export interface UnionTsType {
+  meta: 'union'
+  types: TsType[]
 }
