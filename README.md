@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# JSON Lense
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+JSON Lense is the most elaborate open source JSON inspector tool. [#GithubPage](https://phryxia.github.io/json-lense/)
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Various JSON input method
+  - By text
+  - By clipboard
+  - By file
+- Optimized tree style JSON viewer
+  - Can render huge JSON without lag, thanks to fake scroll technique
+- Manipulate JSON using TypeScript
+  - with inferenced type from your JSON data!
 
-## Expanding the ESLint configuration
+## Values of JSON Lense
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Developer friendly
+- Open source
+- No freaking ad
+- 100% Client Logic
+  - No server api
+  - No data leakage
+  - No user tracking
+- Safe code evaluation using [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
+  - No `eval` or `Function` based code execution
 
-- Configure the top-level `parserOptions` property like this:
+## Run on your local environment
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Note that there is no difference with github page hosted one, in terms of features.
+
+```
+npm i
+
+# simply dev mode will work
+npm run dev 
+
+# or you can build and serve
+npm run build
+npm run preview
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Development
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Please read `CODE_OF_CONDUCT.md` first.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+JSON Lense uses 
+
+- [`npm`](https://www.npmjs.com/) for package manager
+- [`vite`](https://github.com/vitejs/vite) for bundler
+- [`vitest`](https://github.com/vitest-dev/vitest) for unit tester
+- [`monaco-editor`](https://github.com/microsoft/monaco-editor) for editor
+
+FYI checkout the `package.json`.
+
+Also, **don't forget to enable** [`prettier`](https://prettier.io/) in your IDE or manually apply before you commit.
