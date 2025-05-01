@@ -2,6 +2,7 @@ import * as monaco from 'monaco-editor'
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { debounce } from '@src/logic/shared/debounce'
 import { useTunnel } from '@src/logic/shared/useTunnel'
+import { escapeForTypeScript } from '@src/logic/tsType/escape'
 import type { JsWorkerProtocol, JsWorkerSuccess } from './types'
 import { JsWorkerMessageType } from './consts'
 import { useJsWorker } from './useJsWorker'
@@ -82,7 +83,7 @@ function createJsProcessor(model: monaco.editor.ITextModel | null | undefined) {
       type: '${JsWorkerMessageType.TransformResult}',
       result: transform(${
         typeof targetValue === 'object'
-          ? `JSON.parse('${JSON.stringify(targetValue).replaceAll("'", "\\'")}')`
+          ? `JSON.parse('${escapeForTypeScript(JSON.stringify(targetValue))}')`
           : renderPrimitiveValue(targetValue)
       })
     })
@@ -106,7 +107,7 @@ function renderPrimitiveValue(value: any) {
   }
 
   if (typeof value === 'string') {
-    return `'${value.replaceAll("'", "\\'")}'`
+    return `'${escapeForTypeScript(value)}'`
   }
 
   if (typeof value === 'number' || typeof value === 'boolean') {
