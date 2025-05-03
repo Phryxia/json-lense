@@ -2,7 +2,8 @@ import classNames from 'classnames/bind'
 import styles from './ReactorEditor.module.css'
 import { useRef, useState, useEffect } from 'react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { JsWorkerSuccess } from './types'
+import { useUpdateMonacoTsTypes } from '@src/logic/useUpdateMonacoTsTypes'
+import type { JsWorkerSuccess } from './types'
 import { useProessJson } from './useProcessJson'
 
 const cx = classNames.bind(styles)
@@ -21,6 +22,8 @@ export function ReactorEditor({ json, onSuccess }: Props) {
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null)
   const monacoDOM = useRef<HTMLDivElement>(null)
+
+  useUpdateMonacoTsTypes(json)
 
   useEffect(() => {
     if (monacoDOM) {
