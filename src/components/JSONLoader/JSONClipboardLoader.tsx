@@ -27,7 +27,7 @@ export function JSONClipboardLoader({ onLoad }: LoaderProps) {
   }
 
   return (
-    <article>
+    <>
       <section>
         <button onClick={handleClick}>Click to paste!</button>
       </section>
@@ -43,6 +43,6 @@ export function JSONClipboardLoader({ onLoad }: LoaderProps) {
           <JSONInspector json={json} height={200} />
         </section>
       )}
-    </article>
+    </>
   )
 }
