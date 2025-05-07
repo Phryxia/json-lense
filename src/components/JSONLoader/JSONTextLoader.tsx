@@ -7,7 +7,7 @@ export function JSONTextLoader({ onLoad }: LoaderProps) {
   const [error, setError] = useState<Error>()
 
   return (
-    <article>
+    <>
       <textarea
         value={source}
         onChange={(e) => {
@@ -27,6 +27,6 @@ export function JSONTextLoader({ onLoad }: LoaderProps) {
         placeholder="Type JSON data here"
       />
       {error && <JSONSyntaxError error={error} source={source} />}
-    </article>
+    </>
   )
 }

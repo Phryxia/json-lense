@@ -1,0 +1,23 @@
+.header {
+  h2 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+
+    & > * {
+      margin-right: 0.3rem;
+    }
+
+    .github {
+      display: inline-flex;
+      background: unset;
+      border: none;
+      padding: none;
+      height: 1rem;
+      width: 1rem;
+    }
+  }
+}
