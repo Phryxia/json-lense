@@ -1,0 +1,7 @@
+.json-loader {
+  margin-top: var(--pico-block-spacing-horizontal);
+
+  article {
+    padding-top: 0;
+  }
+}

@@ -60,7 +60,7 @@ export function JSONFileLoader({ onLoad }: LoaderProps) {
   }
 
   return (
-    <article
+    <div
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -96,6 +96,6 @@ export function JSONFileLoader({ onLoad }: LoaderProps) {
           <JSONInspector json={json} height={200} />
         </section>
       )}
-    </article>
+    </div>
   )
 }
