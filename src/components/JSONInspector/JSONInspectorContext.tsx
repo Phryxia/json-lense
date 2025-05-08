@@ -4,6 +4,7 @@ import {
   type SetStateAction,
   createContext,
   useContext,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react'
@@ -17,6 +18,8 @@ type JSONInspectorContextInterface = {
   matches: JSONSearchResult[]
   matchesPerToken: Record<number, JSONSearchResult[]>
   setMatches: Dispatch<SetStateAction<JSONSearchResult[]>>
+  selectedMatchIndex: number
+  setSelectedMatchIndex: Dispatch<SetStateAction<number>>
 }
 
 const jsonInspectorContext = createContext<JSONInspectorContextInterface>({
@@ -25,6 +28,8 @@ const jsonInspectorContext = createContext<JSONInspectorContextInterface>({
   matches: [],
   matchesPerToken: {},
   setMatches: () => {},
+  selectedMatchIndex: 0,
+  setSelectedMatchIndex: () => {},
 })
 
 type Props = {
@@ -36,6 +41,7 @@ export function JSONInspectorProvider({
   json,
 }: PropsWithChildren<Props>) {
   const [matches, setMatches] = useState<JSONSearchResult[]>([])
+  const [selectedMatchIndex, setSelectedMatchIndex] = useState(0)
 
   const lines = useMemo(() => [...renderJSONAsLines(json)], [json])
 
@@ -52,6 +58,14 @@ export function JSONInspectorProvider({
     [matches],
   )
 
+  useLayoutEffect(() => {
+    if (matches.length) {
+      setSelectedMatchIndex(Math.min(selectedMatchIndex, matches.length - 1))
+    } else {
+      setSelectedMatchIndex(0)
+    }
+  }, [matches.length])
+
   return (
     <jsonInspectorContext.Provider
       value={{
@@ -60,6 +74,8 @@ export function JSONInspectorProvider({
         matches,
         matchesPerToken,
         setMatches,
+        selectedMatchIndex,
+        setSelectedMatchIndex,
       }}
     >
       {children}
