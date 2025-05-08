@@ -1,11 +1,64 @@
 .root {
   .search-bar {
+    display: flex;
+    align-items: stretch;
     font-size: inherit;
     margin-bottom: 0;
 
     & > * {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
+    }
+
+    input:has(+ .search-nav) {
+      border-right: none;
+    }
+
+    .search-nav {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+      color: var(--pico-secondary-text);
+      background-color: var(--pico-form-element-background-color);
+      border-top: 1px solid;
+      border-bottom: 1px solid;
+      border-color: var(--pico-form-element-border-color);
+      font-size: 0.8rem;
+
+      .index {
+        width: max-content;
+        text-align: right;
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        height: 1rem;
+        font-size: inherit;
+
+        /* Remove spinner */
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        -moz-appearance: textfield;
+
+        &:focus,
+        &:active {
+          box-shadow: none;
+          background-color: unset;
+          border-bottom: 2px solid var(--pico-primary-border);
+        }
+      }
+
+      .search-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-right: 1rem;
+      }
     }
 
     .search-option-button {

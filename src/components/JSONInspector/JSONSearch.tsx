@@ -10,7 +10,7 @@ const cx = cnx.bind(styles)
 type Props = {}
 
 export function JSONSearch({}: Props) {
-  const { lines, setMatches } = useJSONInspector()
+  const { lines, matches, setMatches } = useJSONInspector()
 
   const [keyword, setKeyword] = useState('')
   const [isMatchCase, setIsMatchCase] = useState(false)
@@ -66,6 +66,22 @@ export function JSONSearch({}: Props) {
         placeholder="Enter keyword here"
         onChange={(e) => setKeyword(e.target.value)}
       />
+      {keyword && (
+        <>
+          <label className={cx('search-nav')}>
+            <input
+              className={cx('index')}
+              type="number"
+              min="1"
+              max={matches.length}
+              value={0}
+            />
+            <span className={cx('search-count')}>/{matches.length}</span>
+          </label>
+          <button className={cx('search-option-button')}>◀</button>
+          <button className={cx('search-option-button')}>▶</button>
+        </>
+      )}
       <button
         role="checkbox"
         className={cx('search-option-button')}
