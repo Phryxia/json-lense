@@ -1,6 +1,6 @@
 import cnx from 'classnames/bind'
 import styles from './JSONInspector.module.css'
-import { useLayoutEffect, useState } from 'react'
+import { type ChangeEvent, useLayoutEffect, useState } from 'react'
 import { useJSONInspector } from './JSONInspectorContext'
 import type { IndexedJSONLine } from './JSONRenderer/types'
 import type { JSONSearchResult } from './types'
@@ -10,7 +10,13 @@ const cx = cnx.bind(styles)
 type Props = {}
 
 export function JSONSearch({}: Props) {
-  const { lines, matches, setMatches } = useJSONInspector()
+  const {
+    lines,
+    matches,
+    setMatches,
+    selectedMatchIndex,
+    setSelectedMatchIndex,
+  } = useJSONInspector()
 
   const [keyword, setKeyword] = useState('')
   const [isMatchCase, setIsMatchCase] = useState(false)
@@ -59,6 +65,26 @@ export function JSONSearch({}: Props) {
     isRegexUsed,
   ])
 
+  function handleSelectedMatchIndexChange(e: ChangeEvent<HTMLInputElement>) {
+    if (Number.isNaN(e.target.valueAsNumber)) return
+
+    const value = e.target.valueAsNumber - 1
+
+    if (value < 0 || value >= matches.length) return
+
+    setSelectedMatchIndex(value)
+  }
+
+  function handleMoveLeftClick() {
+    const newIndex = (selectedMatchIndex - 1 + matches.length) % matches.length
+    setSelectedMatchIndex(newIndex)
+  }
+
+  function handleMoveRightClick() {
+    const newIndex = (selectedMatchIndex + 1) % matches.length
+    setSelectedMatchIndex(newIndex)
+  }
+
   return (
     <fieldset role="group" className={cx('search-bar')}>
       <input
@@ -74,12 +100,25 @@ export function JSONSearch({}: Props) {
               type="number"
               min="1"
               max={matches.length}
-              value={0}
+              value={Math.min(selectedMatchIndex + 1, matches.length)}
+              onChange={handleSelectedMatchIndexChange}
             />
             <span className={cx('search-count')}>/{matches.length}</span>
           </label>
-          <button className={cx('search-option-button')}>◀</button>
-          <button className={cx('search-option-button')}>▶</button>
+          <button
+            className={cx('search-option-button')}
+            onClick={handleMoveLeftClick}
+            disabled={matches.length === 0}
+          >
+            ◀
+          </button>
+          <button
+            className={cx('search-option-button')}
+            onClick={handleMoveRightClick}
+            disabled={matches.length === 0}
+          >
+            ▶
+          </button>
         </>
       )}
       <button
