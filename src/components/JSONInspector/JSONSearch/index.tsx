@@ -1,9 +1,9 @@
 import cnx from 'classnames/bind'
-import styles from './JSONInspector.module.css'
+import styles from '../JSONInspector.module.css'
 import { type ChangeEvent, useLayoutEffect, useState } from 'react'
-import { useJSONInspector } from './JSONInspectorContext'
-import type { IndexedJSONLine } from './JSONRenderer/types'
-import type { JSONSearchResult } from './types'
+import { useJSONInspector } from '../JSONInspectorContext'
+import type { JSONSearchResult } from '../types'
+import { extractResult, searchFromLine } from './logic'
 
 const cx = cnx.bind(styles)
 
@@ -29,36 +29,38 @@ export function JSONSearch({}: Props) {
       return
     }
 
-    const matchedLines = lines
-      .flatMap((line) => {
-        const matchResults = searchFromLine({
-          line,
-          keyword,
-          isMatchCase,
-          isMatchWord,
-          isRegexUsed,
-        })
-
-        if (!matchResults.length) return []
-
-        return matchResults.flatMap(({ token, match }) =>
-          extractResult(match).map(
-            ([beginPosInToken, endPosInToken]) =>
-              ({
-                lineIndex: line.index,
-                tokenId: token.id,
-                beginPosInToken,
-                endPosInToken,
-              }) satisfies JSONSearchResult,
-          ),
-        )
+    const matchedLines = lines.flatMap((line) => {
+      const matchResults = searchFromLine({
+        line,
+        keyword,
+        isMatchCase,
+        isMatchWord,
+        isRegexUsed,
       })
-      .filter(Boolean) as JSONSearchResult[]
+
+      if (!matchResults.length) return matchResults as []
+
+      return matchResults
+        .map(({ token, match }) => {
+          const [beginPosInToken, endPosInToken] = extractResult(match)
+
+          if (beginPosInToken === endPosInToken) return undefined!
+
+          return {
+            lineIndex: line.index,
+            tokenId: token.id,
+            beginPosInToken,
+            endPosInToken,
+          } satisfies JSONSearchResult
+        })
+        .filter(Boolean)
+    })
 
     setMatches(matchedLines)
   }
 
   useLayoutEffect(handleSearchOptionChange, [
+    lines,
     keyword,
     isMatchCase,
     isMatchWord,
@@ -150,56 +152,4 @@ export function JSONSearch({}: Props) {
       </button>
     </fieldset>
   )
-}
-
-type SearchFromLineParams = {
-  line: IndexedJSONLine
-  keyword: string
-  isMatchCase: boolean
-  isMatchWord: boolean
-  isRegexUsed: boolean
-}
-
-function searchFromLine({
-  line,
-  keyword,
-  isMatchCase,
-  isMatchWord,
-  isRegexUsed,
-}: SearchFromLineParams) {
-  return line.tokens
-    .map((token) => {
-      const target = token.content
-      const escapedKeyword = isRegexUsed
-        ? keyword
-        : keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
-
-      const regexp = new RegExp(
-        isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
-        !isMatchCase ? 'i' : undefined,
-      )
-      return {
-        token,
-        match: regexp.exec(target)!,
-      }
-    })
-    .filter(({ match }) => match)
-}
-
-function extractResult(match: RegExpExecArray) {
-  if (match.length === 1) {
-    return [[match.index, match.index + match[0].length]]
-  }
-
-  const results: [number, number][] = []
-
-  for (let i = 1; i <= match.length - 1; ++i) {
-    const matchedIndices = match.indices?.[i]
-
-    if (matchedIndices) {
-      results.push(matchedIndices)
-    }
-  }
-
-  return results
 }
