@@ -167,23 +167,42 @@ function searchFromLine({
   isMatchWord,
   isRegexUsed,
 }: SearchFromLineParams) {
+  const regexp = createRegExp(isRegexUsed, keyword, isMatchWord, isMatchCase)
+
+  if (!regexp) return []
+
   return line.tokens
     .map((token) => {
       const target = token.content
-      const escapedKeyword = isRegexUsed
-        ? keyword
-        : keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
 
-      const regexp = new RegExp(
-        isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
-        !isMatchCase ? 'i' : undefined,
-      )
       return {
         token,
         match: regexp.exec(target)!,
       }
     })
     .filter(({ match }) => match)
+}
+
+function createRegExp(
+  isRegexUsed: boolean,
+  keyword: string,
+  isMatchWord: boolean,
+  isMatchCase: boolean,
+) {
+  const escapedKeyword = isRegexUsed
+    ? keyword
+    : keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
+
+  try {
+    const regexp = new RegExp(
+      isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
+      !isMatchCase ? 'i' : undefined,
+    )
+
+    return regexp
+  } catch (e) {
+    return undefined
+  }
 }
 
 function extractResult(match: RegExpExecArray) {
