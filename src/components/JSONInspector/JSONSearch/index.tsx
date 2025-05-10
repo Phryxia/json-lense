@@ -1,6 +1,11 @@
 import cnx from 'classnames/bind'
 import styles from '../JSONInspector.module.css'
-import { type ChangeEvent, useLayoutEffect, useState } from 'react'
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  useLayoutEffect,
+  useState,
+} from 'react'
 import { useJSONInspector } from '../JSONInspectorContext'
 import type { JSONSearchResult } from '../types'
 import { extractResult, searchFromLine } from './logic'
@@ -87,12 +92,19 @@ export function JSONSearch({}: Props) {
     setSelectedMatchIndex(newIndex)
   }
 
+  function handleSearchEnter(e: KeyboardEvent<HTMLInputElement>) {
+    if (matches.length && e.key === 'Enter') {
+      handleMoveRightClick()
+    }
+  }
+
   return (
     <fieldset role="group" className={cx('search-bar')}>
       <input
         type="text"
         placeholder="Enter keyword here"
         onChange={(e) => setKeyword(e.target.value)}
+        onKeyUp={handleSearchEnter}
       />
       {keyword && (
         <>
