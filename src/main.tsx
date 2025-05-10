@@ -5,11 +5,14 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './userWorker'
 import { IconoirProvider } from 'iconoir-react/regular'
+import { MonacoProvider } from './components/MonacoContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <IconoirProvider>
-      <App />
+      <MonacoProvider>
+        <App />
+      </MonacoProvider>
     </IconoirProvider>
   </StrictMode>,
 )

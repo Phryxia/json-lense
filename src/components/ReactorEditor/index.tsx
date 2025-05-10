@@ -1,8 +1,8 @@
 import classNames from 'classnames/bind'
 import styles from './ReactorEditor.module.css'
-import { useRef, useState, useEffect } from 'react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { useUpdateMonacoTsTypes } from '@src/logic/useUpdateMonacoTsTypes'
+import { useMonaco } from '../MonacoContext'
 import type { JsWorkerSuccess } from './types'
 import { useProessJson } from './useProcessJson'
 
@@ -14,31 +14,15 @@ const transform: ValidReactor = (data: Type) => {
 }`
 
 interface Props {
+  name: string
   json: any | undefined
   onSuccess(data: JsWorkerSuccess): void
 }
 
-export function ReactorEditor({ json, onSuccess }: Props) {
-  const [editor, setEditor] =
-    useState<monaco.editor.IStandaloneCodeEditor | null>(null)
-  const monacoDOM = useRef<HTMLDivElement>(null)
+export function ReactorEditor({ name, json, onSuccess }: Props) {
+  const [editor, setEditor] = useMonaco(name)
 
   useUpdateMonacoTsTypes(json)
-
-  useEffect(() => {
-    if (monacoDOM) {
-      setEditor((editor) => {
-        if (editor) return editor
-
-        return monaco.editor.create(monacoDOM.current!, {
-          value: DEFAULT_CODE,
-          language: 'typescript',
-        })
-      })
-    }
-
-    return () => editor?.dispose()
-  }, [monacoDOM.current])
 
   const { jsError } = useProessJson({
     json,
@@ -46,9 +30,27 @@ export function ReactorEditor({ json, onSuccess }: Props) {
     onSuccess,
   })
 
+  /**
+   * Connect VDOM with monaco editor states
+   *
+   * @param monacoDOM Monaco editor DOM element
+   */
+  function handleContainerInitialized(monacoDOM: HTMLDivElement | null) {
+    if (!editor && monacoDOM) {
+      setEditor(
+        monaco.editor.create(monacoDOM, {
+          model: monaco.editor.createModel(DEFAULT_CODE, 'typescript'),
+        }),
+      )
+    } else if (editor && !monacoDOM) {
+      editor.dispose()
+      setEditor(undefined)
+    }
+  }
+
   return (
     <article>
-      <div className={cx('root')} ref={monacoDOM}></div>
+      <div key={name} className={cx('root')} ref={handleContainerInitialized} />
       {jsError && (
         <pre>
           <code>{jsError}</code>

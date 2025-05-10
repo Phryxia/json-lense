@@ -3,6 +3,7 @@ import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { debounce } from '@src/logic/shared/debounce'
 import { useTunnel } from '@src/logic/shared/useTunnel'
 import { escapeForTypeScript } from '@src/logic/tsType/escape'
+import type { MonacoEditor } from '../MonacoContext'
 import type { JsWorkerProtocol, JsWorkerSuccess } from './types'
 import { JsWorkerMessageType } from './consts'
 import { useJsWorker } from './useJsWorker'
@@ -12,7 +13,7 @@ export function useProessJson({
   json,
   onSuccess,
 }: {
-  editor: monaco.editor.IStandaloneCodeEditor | null
+  editor: MonacoEditor | undefined
   json: any
   onSuccess(data: JsWorkerSuccess): void
 }) {

@@ -15,7 +15,7 @@ function App() {
       <main className="container">
         <JSONLoader onLoad={setJson} />
         {json && <JSONInspector json={json} height={400} />}
-        <ReactorEditor json={json} onSuccess={setProcessedJson} />
+        <ReactorEditor name="input" json={json} onSuccess={setProcessedJson} />
         {processedJson && <JSONExplorer json={processedJson} />}
       </main>
     </>
