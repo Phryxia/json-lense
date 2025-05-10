@@ -1,9 +1,9 @@
 import cnx from 'classnames/bind'
-import styles from './JSONInspector.module.css'
+import styles from '../JSONInspector.module.css'
 import { type ChangeEvent, useLayoutEffect, useState } from 'react'
-import { useJSONInspector } from './JSONInspectorContext'
-import type { IndexedJSONLine } from './JSONRenderer/types'
-import type { JSONSearchResult } from './types'
+import { useJSONInspector } from '../JSONInspectorContext'
+import type { IndexedJSONLine } from '../JSONRenderer/types'
+import type { JSONSearchResult } from '../types'
 
 const cx = cnx.bind(styles)
 
