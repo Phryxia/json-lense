@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useState,
 } from 'react'
+import { Link as LinkIcon } from 'iconoir-react/regular'
 import { useJSONInspector } from '../JSONInspectorContext'
 import type { JSONSearchResult } from '../types'
 import { extractResult, searchFromLine } from './logic'
@@ -161,6 +162,12 @@ export function JSONSearch({}: Props) {
         onClick={() => setIsRegexUsed((flag) => !flag)}
       >
         (.)*
+      </button>
+      <button
+        className={cx('search-option-button', 'share')}
+        data-tooltip="Copy share link"
+      >
+        <LinkIcon />
       </button>
     </fieldset>
   )
