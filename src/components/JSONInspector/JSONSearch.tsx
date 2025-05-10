@@ -39,7 +39,7 @@ export function JSONSearch({}: Props) {
           isRegexUsed,
         })
 
-        if (!matchResults.length) return []
+        if (!matchResults.length) return matchResults as []
 
         return matchResults.flatMap(({ token, match }) =>
           extractResult(match).map(
