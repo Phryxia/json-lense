@@ -37,11 +37,11 @@ function createRegExp(
   isMatchWord: boolean,
   isMatchCase: boolean,
 ) {
-  const escapedKeyword = isRegexUsed
-    ? keyword
-    : keyword.replaceAll(/([.?!()\[\]*])/g, '\\$1')
-
   try {
+    const escapedKeyword = isRegexUsed
+      ? keyword
+      : escapeStringForRegExp(keyword)
+
     const regexp = new RegExp(
       isMatchWord ? `(?<!\\w)${escapedKeyword}(?!\\w)` : escapedKeyword,
       !isMatchCase ? 'i' : undefined,
@@ -53,20 +53,14 @@ function createRegExp(
   }
 }
 
+/**
+ * Add escape sequence `\` to put string content
+ * safely to `new RegExp`
+ * */
+function escapeStringForRegExp(s: string) {
+  return s.replaceAll(/([.,?!*+$|\^()\[\]{}\\])/g, '\\$1')
+}
+
 export function extractResult(match: RegExpExecArray) {
-  if (match.length === 1) {
-    return [[match.index, match.index + match[0].length]]
-  }
-
-  const results: [number, number][] = []
-
-  for (let i = 1; i <= match.length - 1; ++i) {
-    const matchedIndices = match.indices?.[i]
-
-    if (matchedIndices) {
-      results.push(matchedIndices)
-    }
-  }
-
-  return results
+  return [match.index, match.index + match[0].length]
 }

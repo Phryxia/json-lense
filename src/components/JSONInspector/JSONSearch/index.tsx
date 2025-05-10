@@ -29,36 +29,38 @@ export function JSONSearch({}: Props) {
       return
     }
 
-    const matchedLines = lines
-      .flatMap((line) => {
-        const matchResults = searchFromLine({
-          line,
-          keyword,
-          isMatchCase,
-          isMatchWord,
-          isRegexUsed,
-        })
-
-        if (!matchResults.length) return matchResults as []
-
-        return matchResults.flatMap(({ token, match }) =>
-          extractResult(match).map(
-            ([beginPosInToken, endPosInToken]) =>
-              ({
-                lineIndex: line.index,
-                tokenId: token.id,
-                beginPosInToken,
-                endPosInToken,
-              }) satisfies JSONSearchResult,
-          ),
-        )
+    const matchedLines = lines.flatMap((line) => {
+      const matchResults = searchFromLine({
+        line,
+        keyword,
+        isMatchCase,
+        isMatchWord,
+        isRegexUsed,
       })
-      .filter(Boolean) as JSONSearchResult[]
+
+      if (!matchResults.length) return matchResults as []
+
+      return matchResults
+        .map(({ token, match }) => {
+          const [beginPosInToken, endPosInToken] = extractResult(match)
+
+          if (beginPosInToken === endPosInToken) return undefined!
+
+          return {
+            lineIndex: line.index,
+            tokenId: token.id,
+            beginPosInToken,
+            endPosInToken,
+          } satisfies JSONSearchResult
+        })
+        .filter(Boolean)
+    })
 
     setMatches(matchedLines)
   }
 
   useLayoutEffect(handleSearchOptionChange, [
+    lines,
     keyword,
     isMatchCase,
     isMatchWord,
