@@ -1,8 +1,8 @@
 import classNames from 'classnames/bind'
 import styles from './ReactorEditor.module.css'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { useCallback } from 'react'
 import { useUpdateMonacoTsTypes } from '@src/logic/useUpdateMonacoTsTypes'
-import { useMonaco } from '../MonacoContext'
+import { createEditor, getEditor } from '@src/logic/monaco/getEditor'
 import type { JsWorkerSuccess } from './types'
 import { useProessJson } from './useProcessJson'
 
@@ -20,13 +20,11 @@ interface Props {
 }
 
 export function ReactorEditor({ name, json, onSuccess }: Props) {
-  const [editor, setEditor] = useMonaco(name)
-
   useUpdateMonacoTsTypes(json)
 
   const { jsError } = useProessJson({
+    editorName: name,
     json,
-    editor,
     onSuccess,
   })
 
@@ -35,18 +33,18 @@ export function ReactorEditor({ name, json, onSuccess }: Props) {
    *
    * @param monacoDOM Monaco editor DOM element
    */
-  function handleContainerInitialized(monacoDOM: HTMLDivElement | null) {
-    if (!editor && monacoDOM) {
-      setEditor(
-        monaco.editor.create(monacoDOM, {
-          model: monaco.editor.createModel(DEFAULT_CODE, 'typescript'),
-        }),
-      )
-    } else if (editor && !monacoDOM) {
-      editor.dispose()
-      setEditor(undefined)
-    }
-  }
+  const handleContainerInitialized = useCallback(
+    (monacoDOM: HTMLDivElement | null) => {
+      // In react dev mode, this function may be called multiple times.
+      // To guard duplicated model and editor creation, I have to clean up properly.
+      if (monacoDOM) {
+        createEditor(name, monacoDOM, DEFAULT_CODE)
+      } else {
+        getEditor(name)?.dispose()
+      }
+    },
+    [name],
+  )
 
   return (
     <article>

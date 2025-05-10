@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { Link as LinkIcon } from 'iconoir-react/regular'
 import { encodeToDeepLink } from '@src/logic/deeplink'
-import { useMonaco } from '@src/components/MonacoContext'
+import { getModel } from '@src/logic/monaco/getEditor'
 import { useJSONInspector } from '../JSONInspectorContext'
 import type { JSONSearchResult } from '../types'
 import { extractResult, searchFromLine } from './logic'
@@ -102,14 +102,12 @@ export function JSONSearch({}: Props) {
     }
   }
 
-  const [editor] = useMonaco('input')
-
   function handleCopyLink() {
     navigator.clipboard.writeText(
       `${window.location.origin}${window.location.pathname}?data=${encodeToDeepLink(
         {
           input: json,
-          reactorCode: editor?.getValue() ?? '',
+          reactorCode: getModel('input')?.getValue() ?? '',
         },
       )}`,
     )

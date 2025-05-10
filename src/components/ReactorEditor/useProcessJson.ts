@@ -1,28 +1,28 @@
 import * as monaco from 'monaco-editor'
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useLayoutEffect, useState } from 'react'
 import { debounce } from '@src/logic/shared/debounce'
 import { useTunnel } from '@src/logic/shared/useTunnel'
 import { escapeForTypeScript } from '@src/logic/tsType/escape'
-import type { MonacoEditor } from '../MonacoContext'
+import { getModel } from '@src/logic/monaco/getEditor'
 import type { JsWorkerProtocol, JsWorkerSuccess } from './types'
 import { JsWorkerMessageType } from './consts'
 import { useJsWorker } from './useJsWorker'
 
 export function useProessJson({
-  editor,
+  editorName,
   json,
   onSuccess,
 }: {
-  editor: MonacoEditor | undefined
+  editorName: string
   json: any
   onSuccess(data: JsWorkerSuccess): void
 }) {
   const [jsError, setJsError] = useState('')
   const jsWorker = useJsWorker()
-  const processJson = useMemo(
-    () => createJsProcessor(editor?.getModel()),
-    [editor],
-  )
+
+  const model = getModel(editorName)
+  const processJson = useCallback(createJsProcessor(model), [editorName, model])
+
   const playground = useTunnel({
     json,
     processJson,
@@ -40,13 +40,13 @@ export function useProessJson({
   }, [json])
 
   useLayoutEffect(() => {
-    editor?.onDidChangeModelContent((e) => {
+    model?.onDidChangeContent((e) => {
       if (e.isEolChange) return
       playground.current.handleProcessJson()
     })
 
     return () => jsWorker.terminate()
-  }, [editor, jsWorker])
+  }, [editorName, jsWorker])
 
   const handleJsProcess = useCallback(
     (data: JsWorkerProtocol) => {
