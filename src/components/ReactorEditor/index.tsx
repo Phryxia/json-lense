@@ -45,6 +45,7 @@ export function ReactorEditor({ name, json, onSuccess }: Props) {
         resizeObserver.current.observe(monacoDOM)
       } else {
         resizeObserver.current?.disconnect()
+        resizeObserver.current = undefined
         getEditor(name)?.dispose()
       }
     },
