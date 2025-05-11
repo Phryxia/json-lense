@@ -46,7 +46,7 @@ export function useProessJson({
     })
 
     return () => jsWorker.terminate()
-  }, [editorName, jsWorker])
+  }, [model, jsWorker])
 
   const handleJsProcess = useCallback(
     (data: JsWorkerProtocol) => {
