@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind'
 import styles from './ReactorEditor.module.css'
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { useUpdateMonacoTsTypes } from '@src/logic/useUpdateMonacoTsTypes'
 import { createEditor, getEditor } from '@src/logic/monaco/getEditor'
 import type { JsWorkerSuccess } from './types'
@@ -28,6 +28,8 @@ export function ReactorEditor({ name, json, onSuccess }: Props) {
     onSuccess,
   })
 
+  const resizeObserver = useRef<ResizeObserver>()
+
   /**
    * Connect VDOM with monaco editor states
    *
@@ -38,8 +40,11 @@ export function ReactorEditor({ name, json, onSuccess }: Props) {
       // In react dev mode, this function may be called multiple times.
       // To guard duplicated model and editor creation, I have to clean up properly.
       if (monacoDOM) {
-        createEditor(name, monacoDOM, DEFAULT_CODE)
+        const editor = createEditor(name, monacoDOM, DEFAULT_CODE)
+        resizeObserver.current = new ResizeObserver(() => editor.layout())
+        resizeObserver.current.observe(monacoDOM)
       } else {
+        resizeObserver.current?.disconnect()
         getEditor(name)?.dispose()
       }
     },
@@ -47,8 +52,12 @@ export function ReactorEditor({ name, json, onSuccess }: Props) {
   )
 
   return (
-    <article>
-      <div key={name} className={cx('root')} ref={handleContainerInitialized} />
+    <article className={cx('root')}>
+      <div
+        key={name}
+        className={cx('container')}
+        ref={handleContainerInitialized}
+      />
       {jsError && (
         <pre>
           <code>{jsError}</code>

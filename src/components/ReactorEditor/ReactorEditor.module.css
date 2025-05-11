@@ -1,4 +1,13 @@
 .root {
-  width: 100%;
-  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  resize: vertical;
+  overflow: hidden;
+  min-height: 130px;
+
+  .container {
+    min-height: 130px;
+    height: calc(100% - var(--pico-block-spacing-vertical));
+  }
 }
