@@ -7,6 +7,7 @@ import { LoaderNav } from './JSONLoaderNav'
 import { JSONTextLoader } from './JSONTextLoader'
 import { JSONClipboardLoader } from './JSONClipboardLoader'
 import { JSONFileLoader } from './JSONFileLoader'
+import { JSONUrlLoadedIndicator } from './JSONUrlLoadedIndicator'
 
 const cx = cns.bind(styles)
 
@@ -14,6 +15,7 @@ const Loaders: Record<LoaderType, (props: LoaderProps) => ReactElement> = {
   [LoaderType.FromText]: JSONTextLoader,
   [LoaderType.FromClipboard]: JSONClipboardLoader,
   [LoaderType.FromFile]: JSONFileLoader,
+  [LoaderType.FromURL]: JSONUrlLoadedIndicator,
 }
 
 type Props = {
@@ -21,7 +23,11 @@ type Props = {
 }
 
 export function JSONLoader({ onLoad }: Props) {
-  const [loaderType, setLoaderType] = useState(LoaderType.FromText)
+  const [loaderType, setLoaderType] = useState(
+    window.location.search.includes('data=')
+      ? LoaderType.FromURL
+      : LoaderType.FromText,
+  )
 
   return (
     <section className={cx('json-loader')}>

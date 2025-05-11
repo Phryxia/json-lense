@@ -6,6 +6,9 @@ import {
   useLayoutEffect,
   useState,
 } from 'react'
+import { Link as LinkIcon } from 'iconoir-react/regular'
+import { encodeToDeepLink } from '@src/logic/deeplink'
+import { getModel } from '@src/logic/monaco/getEditor'
 import { useJSONInspector } from '../JSONInspectorContext'
 import type { JSONSearchResult } from '../types'
 import { extractResult, searchFromLine } from './logic'
@@ -16,6 +19,7 @@ type Props = {}
 
 export function JSONSearch({}: Props) {
   const {
+    json,
     lines,
     matches,
     setMatches,
@@ -98,6 +102,17 @@ export function JSONSearch({}: Props) {
     }
   }
 
+  function handleCopyLink() {
+    navigator.clipboard.writeText(
+      `${window.location.origin}${window.location.pathname}?data=${encodeToDeepLink(
+        {
+          input: json,
+          reactorCode: getModel('input')?.getValue() ?? '',
+        },
+      )}`,
+    )
+  }
+
   return (
     <fieldset role="group" className={cx('search-bar')}>
       <input
@@ -161,6 +176,13 @@ export function JSONSearch({}: Props) {
         onClick={() => setIsRegexUsed((flag) => !flag)}
       >
         (.)*
+      </button>
+      <button
+        className={cx('search-option-button', 'share')}
+        data-tooltip="Copy share link"
+        onClick={handleCopyLink}
+      >
+        <LinkIcon />
       </button>
     </fieldset>
   )

@@ -4,9 +4,10 @@ import { JSONLoader } from './components/JSONLoader'
 import { JSONInspector } from './components/JSONInspector'
 import { JSONExplorer } from './components/JSONExplorer'
 import { ReactorEditor } from './components/ReactorEditor'
+import { useInitializeFromQueryString } from './logic/useInitializeJson'
 
 function App() {
-  const [json, setJson] = useState<any>()
+  const [json, setJson] = useInitializeFromQueryString()
   const [processedJson, setProcessedJson] = useState<any>()
 
   return (
@@ -15,7 +16,7 @@ function App() {
       <main className="container">
         <JSONLoader onLoad={setJson} />
         {json && <JSONInspector json={json} height={400} />}
-        <ReactorEditor json={json} onSuccess={setProcessedJson} />
+        <ReactorEditor name="input" json={json} onSuccess={setProcessedJson} />
         {processedJson && <JSONExplorer json={processedJson} />}
       </main>
     </>
