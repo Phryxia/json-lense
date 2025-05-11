@@ -1,8 +1,8 @@
 import classNames from 'classnames/bind'
 import styles from './ReactorEditor.module.css'
-import { useRef, useState, useEffect } from 'react'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { useCallback } from 'react'
 import { useUpdateMonacoTsTypes } from '@src/logic/useUpdateMonacoTsTypes'
+import { createEditor, getEditor } from '@src/logic/monaco/getEditor'
 import type { JsWorkerSuccess } from './types'
 import { useProessJson } from './useProcessJson'
 
@@ -14,41 +14,41 @@ const transform: ValidReactor = (data: Type) => {
 }`
 
 interface Props {
+  name: string
   json: any | undefined
   onSuccess(data: JsWorkerSuccess): void
 }
 
-export function ReactorEditor({ json, onSuccess }: Props) {
-  const [editor, setEditor] =
-    useState<monaco.editor.IStandaloneCodeEditor | null>(null)
-  const monacoDOM = useRef<HTMLDivElement>(null)
-
+export function ReactorEditor({ name, json, onSuccess }: Props) {
   useUpdateMonacoTsTypes(json)
 
-  useEffect(() => {
-    if (monacoDOM) {
-      setEditor((editor) => {
-        if (editor) return editor
-
-        return monaco.editor.create(monacoDOM.current!, {
-          value: DEFAULT_CODE,
-          language: 'typescript',
-        })
-      })
-    }
-
-    return () => editor?.dispose()
-  }, [monacoDOM.current])
-
   const { jsError } = useProessJson({
+    editorName: name,
     json,
-    editor,
     onSuccess,
   })
 
+  /**
+   * Connect VDOM with monaco editor states
+   *
+   * @param monacoDOM Monaco editor DOM element
+   */
+  const handleContainerInitialized = useCallback(
+    (monacoDOM: HTMLDivElement | null) => {
+      // In react dev mode, this function may be called multiple times.
+      // To guard duplicated model and editor creation, I have to clean up properly.
+      if (monacoDOM) {
+        createEditor(name, monacoDOM, DEFAULT_CODE)
+      } else {
+        getEditor(name)?.dispose()
+      }
+    },
+    [name],
+  )
+
   return (
     <article>
-      <div className={cx('root')} ref={monacoDOM}></div>
+      <div key={name} className={cx('root')} ref={handleContainerInitialized} />
       {jsError && (
         <pre>
           <code>{jsError}</code>
