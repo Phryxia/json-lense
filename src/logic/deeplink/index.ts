@@ -6,7 +6,7 @@ import { Serializable } from '@src/model/serializable'
 
 export interface DeepLinkPayload {
   input: Serializable
-  reactorCode: string
+  reactorCode?: string
 }
 
 export function encodeToDeepLink(payload: DeepLinkPayload) {
