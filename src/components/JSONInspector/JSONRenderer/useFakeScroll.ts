@@ -1,6 +1,7 @@
 import {
   type Dispatch,
   type SetStateAction,
+  useCallback,
   useLayoutEffect,
   useRef,
   useState,
@@ -48,20 +49,18 @@ export function useFakeScroll<M extends HTMLElement, S extends HTMLElement>() {
  */
 function useLineHeightMeasure<E extends HTMLElement>() {
   const [lineHeight, setLineHeight] = useState<number>()
-  const measureRef = useRef<E>(null)
 
-  useLayoutEffect(() => {
-    function computeHeight() {
-      if (!measureRef.current) return
+  const handler = useRef<() => void>(() => {})
 
-      const lineHeight = measureRef.current.clientHeight
-
-      setLineHeight(lineHeight)
+  const measureRef = useCallback((element: E | null) => {
+    if (element) {
+      setLineHeight(element.clientHeight)
+      handler.current = () => setLineHeight(element.clientHeight)
+      window.addEventListener('resize', handler.current)
+    } else {
+      setLineHeight(undefined)
+      window.removeEventListener('resize', handler.current)
     }
-
-    computeHeight()
-    window.addEventListener('resize', computeHeight)
-    return () => window.removeEventListener('resize', computeHeight)
   }, [])
 
   return {
