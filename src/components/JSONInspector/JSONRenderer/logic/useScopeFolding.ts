@@ -1,13 +1,8 @@
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { IndexedJSONLine, JSONDefinedToken } from '../types'
 import { fx } from '@fxts/core'
+import type { Scope } from './types'
 import { OpenState } from './consts'
-
-type Scope = {
-  begin: number
-  end: number
-  isOpen?: boolean
-}
 
 export function useScopeFolding(lines: IndexedJSONLine[]) {
   const [scopes, setScopes] = useState<Scope[]>([])
