@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       reporter: ['text'],
+      include: ['src/logic/arrangers/JsonArranger.ts'],
     },
   },
 })
