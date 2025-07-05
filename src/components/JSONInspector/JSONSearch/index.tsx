@@ -1,81 +1,28 @@
 import cnx from 'classnames/bind'
 import styles from '../JSONInspector.module.css'
-import {
-  type ChangeEvent,
-  type KeyboardEvent,
-  useLayoutEffect,
-  useState,
-} from 'react'
+import { useAtom, useAtomValue } from 'jotai'
+import { type ChangeEvent, type KeyboardEvent, useState } from 'react'
 import { Link as LinkIcon } from 'iconoir-react/regular'
 import { encodeToDeepLink } from '@src/logic/deeplink'
 import { getModel } from '@src/logic/monaco/getEditor'
 import { useOutsideClickHandler } from '@src/logic/useOutsideClickHandler'
-import { useJSONInspector } from '../JSONInspectorContext'
-import type { JSONSearchResult } from '../types'
-import { extractResult, searchFromLine } from './logic'
+import { JsonInspectorSuite } from '../atoms'
 
 const cx = cnx.bind(styles)
 
 type Props = {}
 
 export function JSONSearch({}: Props) {
-  const {
-    json,
-    lines,
-    matches,
-    setMatches,
-    selectedMatchIndex,
-    setSelectedMatchIndex,
-  } = useJSONInspector()
+  const json = useAtomValue(JsonInspectorSuite.target)
 
-  const [keyword, setKeyword] = useState('')
-  const [isMatchCase, setIsMatchCase] = useState(false)
-  const [isMatchWord, setIsMatchWord] = useState(false)
-  const [isRegexUsed, setIsRegexUsed] = useState(false)
-
-  function handleSearchOptionChange() {
-    if (!keyword) {
-      setMatches([])
-      return
-    }
-
-    const matchedLines = lines.flatMap((line) => {
-      const matchResults = searchFromLine({
-        line,
-        keyword,
-        isMatchCase,
-        isMatchWord,
-        isRegexUsed,
-      })
-
-      if (!matchResults.length) return matchResults as []
-
-      return matchResults
-        .map(({ token, match }) => {
-          const [beginPosInToken, endPosInToken] = extractResult(match)
-
-          if (beginPosInToken === endPosInToken) return undefined!
-
-          return {
-            lineIndex: line.index,
-            tokenId: token.id,
-            beginPosInToken,
-            endPosInToken,
-          } satisfies JSONSearchResult
-        })
-        .filter(Boolean)
-    })
-
-    setMatches(matchedLines)
-  }
-
-  useLayoutEffect(handleSearchOptionChange, [
-    lines,
-    keyword,
-    isMatchCase,
-    isMatchWord,
-    isRegexUsed,
-  ])
+  const [keyword, setKeyword] = useAtom(JsonInspectorSuite.keyword)
+  const [isMatchCase, setIsMatchCase] = useAtom(JsonInspectorSuite.isMatchCase)
+  const [isMatchWord, setIsMatchWord] = useAtom(JsonInspectorSuite.isMatchWord)
+  const [isRegexUsed, setIsRegexUsed] = useAtom(JsonInspectorSuite.isRegexUsed)
+  const [selectedMatchIndex, setSelectedMatchIndex] = useAtom(
+    JsonInspectorSuite.selectedMatchIndex,
+  )
+  const matches = useAtomValue(JsonInspectorSuite.searchResults)
 
   function handleSelectedMatchIndexChange(e: ChangeEvent<HTMLInputElement>) {
     if (Number.isNaN(e.target.valueAsNumber)) return

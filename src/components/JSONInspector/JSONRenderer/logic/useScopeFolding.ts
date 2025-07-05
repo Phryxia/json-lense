@@ -1,84 +1,63 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import { IndexedJSONLine, JSONDefinedToken } from '../types'
-import { fx } from '@fxts/core'
+import { useCallback, useLayoutEffect, useState } from 'react'
+import type { LineContent, NestedContent } from '@src/model/Content'
 import type { Scope } from './types'
-import { OpenState } from './consts'
 
-export function useScopeFolding(lines: IndexedJSONLine[]) {
-  const [scopes, setScopes] = useState<Scope[]>([])
+/**
+ * @param contents parsed contents from memory
+ * @returns openStates: whether given scope is open or closed.
+ * Every scope is identified by its `lineBegin` index.
+ * toggleScope: toggle the open state of a scope by its `lineBegin` index.
+ */
+export function useScopeFolding(contents: NestedContent[]) {
+  const [scopes, setScopes] = useState(() => computeScopes(contents))
 
   useLayoutEffect(() => {
-    setScopes(computeScopes(lines))
-  }, [lines])
+    setScopes(computeScopes(contents))
+  }, [contents])
 
   const toggleScope = useCallback((begin: number) => {
-    setScopes((scopes) =>
-      scopes.map((scope) =>
-        scope.begin === begin ? { ...scope, isOpen: !scope.isOpen } : scope,
-      ),
-    )
+    setScopes((scopes) => ({
+      ...scopes,
+      [begin]: {
+        ...scopes[begin],
+        isOpen: !scopes[begin].isOpen,
+      },
+    }))
   }, [])
 
-  const openStates = useMemo(() => computeOpenStates(lines, scopes), [scopes])
-
   return {
-    openStates,
+    openStates: scopes,
     toggleScope,
   }
 }
 
-export function computeScopes(lines: IndexedJSONLine[]) {
-  return fx(lines)
-    .filter((line) => line.scopeEndIndex != null)
-    .map((line) => ({
-      begin: line.index,
-      end: line.scopeEndIndex!,
-      // Define default opening
-      isOpen: line.index === 0 || (line.tokens[0] as JSONDefinedToken).tabs < 2,
-    }))
-    .toArray()
-}
+/**
+ * Transformd contents into map of scopes, which keys are `lineBegin` indices.
+ * Every states are initialized to `true`.
+ *
+ * Only NestedContent has scope.
+ *
+ * @param contents Any list of NestedContent or LineContent
+ * @param scopes Used internally to accumulate recursive results. Just ignore it.
+ * @returns
+ */
+export function computeScopes(
+  contents: (NestedContent | LineContent)[],
+  scopes: Record<number, Scope> = {},
+): Record<number, Scope> {
+  for (const content of contents) {
+    if (content.type !== 'block') continue
 
-export function computeOpenStates(
-  lines: IndexedJSONLine[],
-  scopes: Scope[],
-): OpenState[] {
-  // primitive value only
-  if (!scopes.length) {
-    return lines.map(() => OpenState.Open)
+    scopes[content.lineBegin] = {
+      isOpen: true,
+      begin: content.lineBegin,
+      end: content.lineEnd,
+    }
+
+    if (content.children) {
+      computeScopes(content.children, scopes)
+    }
   }
 
-  const scopeStack: Scope[] = []
-  let scopeIndex = 0
-
-  return lines.map(({ index }) => {
-    if (scopeStack.length && scopeStack[scopeStack.length - 1].end < index) {
-      scopeStack.pop()
-    }
-
-    if (scopeIndex < scopes.length && scopes[scopeIndex].begin <= index) {
-      scopeStack.push(scopes[scopeIndex++])
-    }
-
-    if (
-      scopeStack.every(
-        ({ isOpen }, stackIndex) =>
-          stackIndex === scopeStack.length - 1 || isOpen,
-      )
-    ) {
-      const top = scopeStack[scopeStack.length - 1]
-      if (top.begin === index) {
-        if (top.isOpen) {
-          return OpenState.BeginOpen
-        }
-        return OpenState.BeginClosed
-      }
-
-      if (top.isOpen) {
-        return OpenState.Open
-      }
-      return OpenState.Closed
-    }
-    return OpenState.Closed
-  })
+  return scopes
 }

@@ -7,4 +7,9 @@ export default defineConfig({
       include: ['src/logic/arrangers/JsonArranger.ts'],
     },
   },
+  resolve: {
+    alias: {
+      '@src': '/src',
+    },
+  },
 })
