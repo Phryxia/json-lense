@@ -1,28 +1,33 @@
 import cnx from 'classnames/bind'
 import styles from './JSONRenderer.module.css'
-import type { JSONDefinedToken } from './types'
-import { useJSONInspector } from '../JSONInspectorContext'
-import { JSONSearchResult } from '../types'
+import { useMemo } from 'react'
+import { useAtomValue } from 'jotai'
+import type { InlineContent } from '@src/model/Content'
+import type { JSONSearchResult } from '../types'
+import { JsonInspectorSuite } from '../atoms'
 
 const cx = cnx.bind(styles)
 
 type Props = {
-  token: JSONDefinedToken
+  line: number
+  inlineContent: InlineContent
 }
 
-export function RenderedToken({ token: { type, content, id } }: Props) {
-  const { matchesPerToken, matches, selectedMatchIndex } = useJSONInspector()
-
-  const matchResults = matchesPerToken[id] as JSONSearchResult[] | undefined
-  const firstMatch = matchResults?.[0]
+export function RenderedToken({ inlineContent: { text }, line }: Props) {
+  const matches = useAtomValue(JsonInspectorSuite.searchResults)
+  const selectedMatch = useAtomValue(JsonInspectorSuite.selectedMatch)
+  const currentMatch = useMemo(
+    () => matches.find((match) => match.lineIndex === line),
+    [matches, line],
+  )
+  const isCurrrentSelected =
+    selectedMatch?.beginPosInToken === currentMatch?.beginPosInToken &&
+    selectedMatch?.endPosInToken === currentMatch?.endPosInToken
 
   return (
-    <span className={cx(type.toLowerCase())}>
-      {emphasize(
-        content,
-        firstMatch,
-        firstMatch === matches[selectedMatchIndex],
-      )}
+    // todo: add token type or color to inline content to support various languages
+    <span className={cx()}>
+      {emphasize(text, currentMatch, isCurrrentSelected)}
     </span>
   )
 }
