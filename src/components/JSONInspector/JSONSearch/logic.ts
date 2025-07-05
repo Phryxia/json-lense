@@ -1,34 +1,53 @@
-import type { IndexedJSONLine } from '../JSONRenderer/types'
+import type { LineContent, NestedContent } from '@src/model/Content'
+import type { JSONSearchResult, SearchParameters } from '../types'
 
-type SearchFromLineParams = {
-  line: IndexedJSONLine
-  keyword: string
-  isMatchCase: boolean
-  isMatchWord: boolean
-  isRegexUsed: boolean
+export function searchFromContent(
+  content: NestedContent | LineContent,
+  searchParams: SearchParameters,
+): JSONSearchResult[] {
+  if (content.type === 'line') {
+    return searchFromLineContent(content, searchParams)
+  }
+  if (content.type === 'block') {
+    return searchFromNestedContent(content, searchParams)
+  }
+  return []
 }
 
-export function searchFromLine({
-  line,
-  keyword,
-  isMatchCase,
-  isMatchWord,
-  isRegexUsed,
-}: SearchFromLineParams) {
+function searchFromNestedContent(
+  content: NestedContent,
+  searchParams: SearchParameters,
+): JSONSearchResult[] {
+  return (
+    content.children?.flatMap((child) =>
+      searchFromContent(child, searchParams),
+    ) ?? []
+  )
+}
+
+function searchFromLineContent(
+  line: LineContent,
+  { keyword, isMatchCase, isMatchWord, isRegexUsed }: SearchParameters,
+): JSONSearchResult[] {
   const regexp = createRegExp(isRegexUsed, keyword, isMatchWord, isMatchCase)
 
   if (!regexp) return []
 
-  return line.tokens
-    .map((token) => {
-      const target = token.content
+  return (
+    line.children?.flatMap((inlineContent) => {
+      const matches = [...inlineContent.text.matchAll(regexp)]
 
-      return {
-        token,
-        match: regexp.exec(target)!,
-      }
-    })
-    .filter(({ match }) => match)
+      return matches.map(
+        (match, index) =>
+          ({
+            lineIndex: line.line,
+            tokenId: index,
+            beginPosInToken: match.index ?? 0,
+            endPosInToken: (match.index ?? 0) + match[0].length,
+          }) satisfies JSONSearchResult,
+      )
+    }) ?? []
+  )
 }
 
 function createRegExp(

@@ -1,3 +1,10 @@
+export interface SearchParameters {
+  keyword: string
+  isMatchCase: boolean
+  isMatchWord: boolean
+  isRegexUsed: boolean
+}
+
 export type JSONSearchResult = {
   /** Line number starts from 0 where search target exists */
   lineIndex: number
