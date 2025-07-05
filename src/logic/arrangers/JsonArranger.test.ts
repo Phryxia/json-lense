@@ -117,7 +117,7 @@ describe('JsonArranger', () => {
           {
             line: 1,
             type: 'line',
-            children: [{ text: '  ' }, { text: '42' }],
+            children: [{ text: '42' }],
           },
           {
             line: 2,
@@ -144,86 +144,16 @@ describe('JsonArranger', () => {
           {
             line: 1,
             type: 'line',
-            children: [{ text: '  ' }, { text: '1' }, { text: ',' }],
+            children: [{ text: '1' }, { text: ',' }],
           },
           {
             line: 2,
             type: 'line',
-            children: [{ text: '  ' }, { text: '2' }],
+            children: [{ text: '2' }],
           },
           {
             line: 3,
             type: 'line',
-            children: [{ text: ']' }],
-          },
-        ],
-      },
-    ])
-  })
-
-  it('should arrange nested array with increased indent', () => {
-    expect(JsonArranger.arrange([[[0, 1]]])).toMatchObject<NestedContent[]>([
-      {
-        type: 'block',
-        lineBegin: 0,
-        lineEnd: 7,
-        children: [
-          {
-            type: 'line',
-            line: 0,
-            children: [{ text: '[' }],
-          },
-          {
-            type: 'block',
-            lineBegin: 1,
-            lineEnd: 6,
-            children: [
-              {
-                type: 'line',
-                line: 1,
-                children: [{ text: '  ' }, { text: '[' }],
-              },
-              {
-                type: 'block',
-                lineBegin: 2,
-                lineEnd: 5,
-                children: [
-                  {
-                    type: 'line',
-                    line: 2,
-                    children: [{ text: '    ' }, { text: '[' }],
-                  },
-                  {
-                    type: 'line',
-                    line: 3,
-                    children: [
-                      { text: '      ' },
-                      { text: '0' },
-                      { text: ',' },
-                    ],
-                  },
-                  {
-                    type: 'line',
-                    line: 4,
-                    children: [{ text: '      ' }, { text: '1' }],
-                  },
-                  {
-                    type: 'line',
-                    line: 5,
-                    children: [{ text: '    ' }, { text: ']' }],
-                  },
-                ],
-              },
-              {
-                type: 'line',
-                line: 6,
-                children: [{ text: '  ' }, { text: ']' }],
-              },
-            ],
-          },
-          {
-            type: 'line',
-            line: 7,
             children: [{ text: ']' }],
           },
         ],
@@ -270,11 +200,7 @@ describe('JsonArranger', () => {
           {
             line: 1,
             type: 'line',
-            children: [
-              { text: '  ' },
-              { text: '"key": ' },
-              { text: '"value"' },
-            ],
+            children: [{ text: '"key": ' }, { text: '"value"' }],
           },
           {
             line: 2,
@@ -302,17 +228,12 @@ describe('JsonArranger', () => {
             {
               line: 1,
               type: 'line',
-              children: [
-                { text: '  ' },
-                { text: '"a": ' },
-                { text: '1' },
-                { text: ',' },
-              ],
+              children: [{ text: '"a": ' }, { text: '1' }, { text: ',' }],
             },
             {
               line: 2,
               type: 'line',
-              children: [{ text: '  ' }, { text: '"b": ' }, { text: '2' }],
+              children: [{ text: '"b": ' }, { text: '2' }],
             },
             {
               line: 3,
@@ -353,22 +274,22 @@ describe('JsonArranger', () => {
               {
                 line: 1,
                 type: 'line',
-                children: [{ text: '  ' }, { text: '"a": ' }, { text: '[' }],
+                children: [{ text: '"a": ' }, { text: '[' }],
               },
               {
                 line: 2,
                 type: 'line',
-                children: [{ text: '    ' }, { text: '4' }, { text: ',' }],
+                children: [{ text: '4' }, { text: ',' }],
               },
               {
                 line: 3,
                 type: 'line',
-                children: [{ text: '    ' }, { text: '2' }],
+                children: [{ text: '2' }],
               },
               {
                 line: 4,
                 type: 'line',
-                children: [{ text: '  ' }, { text: ']' }],
+                children: [{ text: ']' }],
               },
             ],
           },
@@ -411,17 +332,17 @@ describe('JsonArranger', () => {
               {
                 line: 1,
                 type: 'line',
-                children: [{ text: '  ' }, { text: '"a": ' }, { text: '{' }],
+                children: [{ text: '"a": ' }, { text: '{' }],
               },
               {
                 line: 2,
                 type: 'line',
-                children: [{ text: '    ' }, { text: '"b": ' }, { text: '1' }],
+                children: [{ text: '"b": ' }, { text: '1' }],
               },
               {
                 line: 3,
                 type: 'line',
-                children: [{ text: '  ' }, { text: '}' }],
+                children: [{ text: '}' }],
               },
             ],
           },
@@ -478,22 +399,22 @@ describe('JsonArranger', () => {
                 {
                   line: 1,
                   type: 'line',
-                  children: [{ text: '  ' }, { text: '"a": ' }, { text: '[' }],
+                  children: [{ text: '"a": ' }, { text: '[' }],
                 },
                 {
                   line: 2,
                   type: 'line',
-                  children: [{ text: '    ' }, { text: '0' }, { text: ',' }],
+                  children: [{ text: '0' }, { text: ',' }],
                 },
                 {
                   line: 3,
                   type: 'line',
-                  children: [{ text: '    ' }, { text: 'true' }],
+                  children: [{ text: 'true' }],
                 },
                 {
                   line: 4,
                   type: 'line',
-                  children: [{ text: '  ' }, { text: ']' }, { text: ',' }],
+                  children: [{ text: ']' }, { text: ',' }],
                 },
               ],
             },
@@ -506,13 +427,12 @@ describe('JsonArranger', () => {
                 {
                   line: 5,
                   type: 'line',
-                  children: [{ text: '  ' }, { text: '"b": ' }, { text: '{' }],
+                  children: [{ text: '"b": ' }, { text: '{' }],
                 },
                 {
                   line: 6,
                   type: 'line',
                   children: [
-                    { text: '    ' },
                     { text: '"c": ' },
                     { text: 'null' },
                     { text: ',' },
@@ -521,16 +441,12 @@ describe('JsonArranger', () => {
                 {
                   line: 7,
                   type: 'line',
-                  children: [
-                    { text: '    ' },
-                    { text: '"d": ' },
-                    { text: '"babo"' },
-                  ],
+                  children: [{ text: '"d": ' }, { text: '"babo"' }],
                 },
                 {
                   line: 8,
                   type: 'line',
-                  children: [{ text: '  ' }, { text: '}' }],
+                  children: [{ text: '}' }],
                 },
               ],
             },
